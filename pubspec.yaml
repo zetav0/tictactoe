@@ -1,0 +1,40 @@
+name: tictactoe
+description: "Tic Tac Toe game built with Flutter and Flame."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flame: ^1.18.0
+  flutter_riverpod: ^2.5.1
+  google_fonts: ^6.2.1
+  flutter_animate: ^4.5.0
+  cupertino_icons: ^1.0.8
+  firebase_core: ^3.0.0
+  firebase_database: ^11.0.0
+  shared_preferences: ^2.3.2
+  flutter_launcher_icons: ^0.13.1
+  multiavatar: ^0.1.5
+  flutter_svg: ^2.0.10+1
+  audioplayers: ^6.1.0
+  image_picker: ^1.1.2
+  firebase_storage: ^12.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/sounds/
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo.png"
