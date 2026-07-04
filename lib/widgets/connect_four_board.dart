@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../controllers/connect_four_base_controller.dart';
 import '../models/game_model.dart';
+import '../theme/app_colors.dart';
 import '../utils/connect_four_logic.dart';
 
-/// 7×6 Connect Four board. Accepts any [ConnectFourBaseController] so it
-/// works for both local (AI/PvP) and remote (online) games.
+/// 7×6 Connect Four board styled after the Playful Edition stitch design:
+/// — Royal-blue board container (#2B65EC) with a B4C5FF 8px bevel lip
+/// — Dark recessed holes (inner-shadow approximation via radial gradient)
+/// — Glossy red tokens for Player 1, glossy yellow tokens for Player 2
 class ConnectFourBoard extends StatelessWidget {
   final ConnectFourBaseController controller;
 
@@ -13,7 +16,6 @@ class ConnectFourBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ClipRRect clips the drop animation so pieces appear to fall from the top
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),
       child: ListenableBuilder(
@@ -22,14 +24,20 @@ class ConnectFourBoard extends StatelessWidget {
           final state = controller.state;
           return Container(
             decoration: BoxDecoration(
-              color: const Color(0xCC322E3D),
+              color: AppColors.primaryContainer,
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Colors.white12),
-              boxShadow: const [
+              boxShadow: [
+                // 3D bevel lip (light blue bottom border)
                 BoxShadow(
-                  color: Color(0x44000000),
+                  color: AppColors.primary,
+                  offset: const Offset(0, 8),
+                  blurRadius: 0,
+                ),
+                // Depth ambient shadow
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.4),
                   blurRadius: 24,
-                  offset: Offset(0, 8),
+                  offset: const Offset(0, 12),
                 ),
               ],
             ),
@@ -78,8 +86,6 @@ class ConnectFourBoard extends StatelessWidget {
     final isX = value == CellValue.x;
     Widget token = C4Token(isX: isX);
 
-    // Drop-with-bounce animation: skip for winning cell so the win entrance
-    // animation takes visual priority.
     if (isLastPlaced && !isWin) {
       token = token
           .animate(key: ValueKey('t${index}_v${controller.moveCount}'))
@@ -95,7 +101,7 @@ class ConnectFourBoard extends StatelessWidget {
   }
 }
 
-// ── Cell widgets ───────────────────────────────────────────────────────────────
+// ── Empty slot ─────────────────────────────────────────────────────────────────
 
 class C4Slot extends StatelessWidget {
   const C4Slot({super.key});
@@ -105,11 +111,29 @@ class C4Slot extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        color: Color(0xCC18161D),
+        // Dark navy circle simulating a recessed hole in the blue board
+        gradient: RadialGradient(
+          center: Alignment.center,
+          radius: 0.9,
+          colors: [
+            Color(0xFF0F2660), // lighter center
+            Color(0xFF060E2A), // very dark edge
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x66000000),
+            blurRadius: 6,
+            spreadRadius: -1,
+            offset: Offset(0, 3),
+          ),
+        ],
       ),
     );
   }
 }
+
+// ── Game chip (token) ──────────────────────────────────────────────────────────
 
 class C4Token extends StatelessWidget {
   final bool isX;
@@ -118,33 +142,57 @@ class C4Token extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          center: const Alignment(-0.3, -0.4),
-          radius: 0.85,
-          colors: isX
-              ? const [Color(0xFF6750A4), Color(0xFF4F378A)]
-              : const [Color(0xFFFFAB91), Color(0xFFFF8A80)],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: (isX ? const Color(0xFF6750A4) : const Color(0xFFFF8A80))
-                .withValues(alpha: 0.5),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // Main chip body with radial gradient matching the stitch design
+        DecoratedBox(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              center: const Alignment(-0.4, -0.4),
+              radius: 0.9,
+              colors: isX
+                  ? const [Color(0xFFFF6B6B), Color(0xFF93000A)] // red chip
+                  : const [Color(0xFFFFDEAC), Color(0xFFDB9900)], // yellow chip
+            ),
+            boxShadow: [
+              // Inner-shadow approximation (dark offset inside)
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 4,
+                spreadRadius: -2,
+              ),
+              // Drop shadow
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.25),
+                blurRadius: 6,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        // Gloss highlight (white circle at top-left ~15% from edge)
+        Align(
+          alignment: const Alignment(-0.55, -0.55),
+          child: FractionallySizedBox(
+            widthFactor: 0.28,
+            heightFactor: 0.28,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.38),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
 
-/// Wraps a winning token with a staggered entrance bounce + continuous gold pulse.
-///
-/// [sequenceIndex] (0–3) controls the stagger delay so the 4 winning cells
-/// light up one after another, clearly revealing the winning line.
+// ── Win token with staggered bounce + continuous pulse ─────────────────────────
+
 class C4WinToken extends StatefulWidget {
   final Widget child;
   final int sequenceIndex;
@@ -171,7 +219,6 @@ class _C4WinTokenState extends State<C4WinToken> with TickerProviderStateMixin {
       vsync: this,
     );
 
-    // Scale: 1.0 → 1.35 → 0.93 → 1.06 → 1.0
     _bounceScale = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween(begin: 1.0, end: 1.35).chain(CurveTween(curve: Curves.easeOut)),

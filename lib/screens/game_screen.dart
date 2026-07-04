@@ -9,6 +9,7 @@ import '../controllers/game_controller.dart';
 import '../game/tictactoe_game.dart';
 import '../models/game_model.dart';
 import '../theme/app_colors.dart';
+import '../theme/playful_theme.dart';
 import '../widgets/bottom_nav.dart';
 import '../widgets/score_card.dart';
 import '../widgets/tappable.dart';
@@ -52,13 +53,18 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.transparent,
       appBar: buildSharedAppBar(() => Navigator.pop(context)),
-      body: GameBody(controller: _controller, game: _game, onTap: _handleTap),
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppColors.canvasGradient),
+        child: SafeArea(
+          child: GameBody(controller: _controller, game: _game, onTap: _handleTap),
+        ),
+      ),
       bottomNavigationBar: const AppBottomNav(),
     );
   }
-
 }
 
 // ── Shared body used by both local and remote game screens ─────────────────
@@ -169,22 +175,23 @@ class _RestartButton extends StatelessWidget {
       child: TappableScale(
         onTap: onPressed,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 17),
           decoration: BoxDecoration(
-            color: AppColors.primaryContainer,
+            color: AppColors.tertiary,
             borderRadius: BorderRadius.circular(20),
+            boxShadow: PlayfulTheme.tertiaryLip(depth: 5),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.refresh_rounded, color: AppColors.onPrimary),
+              const Icon(Icons.refresh_rounded, color: AppColors.onTertiary, size: 22),
               const SizedBox(width: 8),
               Text(
                 'Restart Game',
-                style: GoogleFonts.inter(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.onPrimary,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.onTertiary,
                 ),
               ),
             ],
@@ -211,61 +218,67 @@ class _GameOverOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = controller.state;
-    final (String title, String emoji, Color color) = switch (state.status) {
+    final (String title, String emoji, Color accentColor) = switch (state.status) {
       GameStatus.xWins => (
           '${controller.player1Label} Wins!',
           '🎉',
-          AppColors.primaryFixedDim,
+          AppColors.xColor,
         ),
       GameStatus.oWins => (
           '${controller.player2Label} Wins!',
           '🎉',
-          AppColors.tertiaryFixed,
+          AppColors.oColor,
         ),
-      GameStatus.draw => ("It's a Draw!", '🤝', Colors.white54),
+      GameStatus.draw => ("It's a Draw!", '🤝', Colors.white70),
       GameStatus.playing => ('', '', Colors.transparent),
     };
 
     return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
       child: Container(
-        color: Colors.black.withAlpha(130),
+        color: Colors.black.withValues(alpha: 0.45),
         child: Center(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 28),
             padding: const EdgeInsets.fromLTRB(28, 32, 28, 28),
             decoration: BoxDecoration(
-              color: AppColors.surfaceContainer.withAlpha(230),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: color.withAlpha(70)),
+              color: Colors.white.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
               boxShadow: [
-                BoxShadow(color: color.withAlpha(50), blurRadius: 40),
+                BoxShadow(
+                  color: accentColor.withValues(alpha: 0.35),
+                  blurRadius: 40,
+                ),
               ],
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(emoji, style: const TextStyle(fontSize: 52)),
+                Text(emoji, style: const TextStyle(fontSize: 56)),
                 const SizedBox(height: 10),
                 Text(
                   title,
-                  style: GoogleFonts.inter(
-                    fontSize: 26,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 28,
                     fontWeight: FontWeight.w800,
-                    color: color,
+                    color: Colors.white,
+                    shadows: PlayfulTheme.bubbleShadow(),
                   ),
                 ),
                 const SizedBox(height: 28),
                 _OverlayButton(
                   label: 'Play Again',
-                  color: AppColors.primary,
+                  color: AppColors.secondary,
+                  textColor: AppColors.onSecondary,
+                  shadowColor: AppColors.secondaryContainer,
                   onTap: onRestart,
                 ),
                 const SizedBox(height: 12),
                 _OverlayButton(
                   label: 'Home',
-                  color: AppColors.surfaceContainerHigh,
-                  textColor: Colors.white60,
+                  color: Colors.white.withValues(alpha: 0.15),
+                  textColor: Colors.white,
                   onTap: onHome,
                 ),
               ],
@@ -284,6 +297,7 @@ class _OverlayButton extends StatefulWidget {
   final String label;
   final Color color;
   final Color textColor;
+  final Color? shadowColor;
   final VoidCallback onTap;
 
   const _OverlayButton({
@@ -291,6 +305,7 @@ class _OverlayButton extends StatefulWidget {
     required this.color,
     required this.onTap,
     this.textColor = Colors.white,
+    this.shadowColor,
   });
 
   @override
@@ -312,17 +327,23 @@ class _OverlayButtonState extends State<_OverlayButton> {
         duration: const Duration(milliseconds: 80),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 15),
+          padding: EdgeInsets.only(
+            top: 16,
+            bottom: _pressed ? 16 : (widget.shadowColor != null ? 12 : 16),
+          ),
           decoration: BoxDecoration(
             color: widget.color,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: widget.shadowColor != null && !_pressed
+                ? PlayfulTheme.lipShadow(widget.shadowColor!, depth: 4)
+                : null,
           ),
           child: Text(
             widget.label,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 16,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w800,
               color: widget.textColor,
             ),
           ),
@@ -332,27 +353,27 @@ class _OverlayButtonState extends State<_OverlayButton> {
   }
 }
 
-AppBar buildSharedAppBar(VoidCallback onBack) {
+AppBar buildSharedAppBar(VoidCallback onBack, {String title = 'TIC TAC TOE'}) {
   return AppBar(
-    backgroundColor: AppColors.background,
+    backgroundColor: Colors.transparent,
     elevation: 0,
     leading: IconButton(
-      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.primaryFixedDim),
+      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
       onPressed: onBack,
     ),
     title: Text(
-      'TIC TAC TOE',
-      style: GoogleFonts.inter(
+      title,
+      style: GoogleFonts.plusJakartaSans(
         fontSize: 20,
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w800,
         letterSpacing: 1,
-        color: AppColors.primaryFixedDim,
+        color: Colors.white,
       ),
     ),
     centerTitle: true,
     actions: [
       IconButton(
-        icon: const Icon(Icons.leaderboard_rounded, color: AppColors.primaryFixedDim),
+        icon: const Icon(Icons.leaderboard_rounded, color: Colors.white70),
         onPressed: () {},
       ),
     ],

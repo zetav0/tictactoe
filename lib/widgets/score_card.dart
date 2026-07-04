@@ -10,7 +10,11 @@ import '../theme/app_colors.dart';
 class ScoreCards extends StatelessWidget {
   final BaseGameController controller;
 
-  const ScoreCards({super.key, required this.controller});
+  /// When true (default, tic-tac-toe on gradient bg): glass-style white panels.
+  /// When false (connect-four on dark bg): dark #1E2020 panels with 3D bevel.
+  final bool glassStyle;
+
+  const ScoreCards({super.key, required this.controller, this.glassStyle = true});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +37,9 @@ class ScoreCards extends StatelessWidget {
                 customImagePath: controller.player1CustomImagePath,
                 score: state.scoreX,
                 active: p1Active,
-                color: AppColors.primaryFixedDim,
+                color: AppColors.xColor,
+                avatarBg: AppColors.primaryContainer,
+                glassStyle: glassStyle,
               ),
               const SizedBox(width: 16),
               _Card(
@@ -42,7 +48,9 @@ class ScoreCards extends StatelessWidget {
                 customImagePath: controller.player2CustomImagePath,
                 score: state.scoreO,
                 active: p2Active,
-                color: AppColors.tertiaryFixed,
+                color: AppColors.oColor,
+                avatarBg: AppColors.secondaryContainer,
+                glassStyle: glassStyle,
               ),
             ],
           ),
@@ -59,6 +67,8 @@ class _Card extends StatelessWidget {
   final int score;
   final bool active;
   final Color color;
+  final Color avatarBg;
+  final bool glassStyle;
 
   const _Card({
     required this.label,
@@ -67,43 +77,68 @@ class _Card extends StatelessWidget {
     required this.color,
     this.avatarSeed,
     this.customImagePath,
+    this.avatarBg = AppColors.primaryContainer,
+    this.glassStyle = true,
   });
+
+  BoxDecoration _darkDecoration(bool active) => BoxDecoration(
+        color: AppColors.surfaceContainer,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.outlineVariant),
+        boxShadow: [
+          BoxShadow(
+            color: active ? color.withValues(alpha: 0.5) : AppColors.outlineVariant,
+            offset: const Offset(0, 4),
+            blurRadius: 0,
+          ),
+        ],
+      );
+
+  BoxDecoration _glassDecoration(bool active) => BoxDecoration(
+        color: active
+            ? Colors.white.withValues(alpha: 0.2)
+            : Colors.white.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: active
+              ? color.withValues(alpha: 0.7)
+              : Colors.white.withValues(alpha: 0.2),
+          width: active ? 2 : 1,
+        ),
+        boxShadow: active
+            ? [BoxShadow(color: color.withValues(alpha: 0.4), blurRadius: 20)]
+            : null,
+      );
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: active
-                ? color.withAlpha(100)
-                : AppColors.outlineVariant.withAlpha(60),
-            width: active ? 1.5 : 1,
-          ),
-          boxShadow: active
-              ? [BoxShadow(color: color.withAlpha(50), blurRadius: 16)]
-              : null,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+        decoration: glassStyle ? _glassDecoration(active) : _darkDecoration(active),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (avatarSeed != null || customImagePath != null) ...[
-              _Avatar(seed: avatarSeed ?? '', imagePath: customImagePath, active: active, color: color),
+              _Avatar(
+                seed: avatarSeed ?? '',
+                imagePath: customImagePath,
+                active: active,
+                color: color,
+                bg: glassStyle ? null : avatarBg,
+              ),
               const SizedBox(height: 6),
             ],
             Text(
               label.toUpperCase(),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: (avatarSeed != null || customImagePath != null) ? 10 : 11,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
                 letterSpacing: 1.2,
-                color: active ? color : AppColors.secondaryFixed,
+                color: active ? Colors.white : Colors.white54,
               ),
             ),
             const SizedBox(height: 4),
@@ -118,10 +153,10 @@ class _Card extends StatelessWidget {
               child: Text(
                 '$score',
                 key: ValueKey(score),
-                style: GoogleFonts.inter(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  color: active ? color : Colors.white54,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w800,
+                  color: active ? Colors.white : Colors.white54,
                 ),
               ),
             ),
@@ -137,23 +172,32 @@ class _Avatar extends StatelessWidget {
   final String? imagePath;
   final bool active;
   final Color color;
+  /// If non-null, fills the circle with this solid background color (dark-style cards).
+  final Color? bg;
 
-  const _Avatar({required this.seed, required this.active, required this.color, this.imagePath});
+  const _Avatar({
+    required this.seed,
+    required this.active,
+    required this.color,
+    this.imagePath,
+    this.bg,
+  });
 
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      width: 40,
-      height: 40,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
+        color: bg,
         border: Border.all(
-          color: active ? color.withAlpha(180) : Colors.transparent,
+          color: active ? color.withValues(alpha: 0.8) : Colors.white.withValues(alpha: 0.2),
           width: 2,
         ),
         boxShadow: active
-            ? [BoxShadow(color: color.withAlpha(80), blurRadius: 10)]
+            ? [BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 12)]
             : null,
       ),
       clipBehavior: Clip.antiAlias,

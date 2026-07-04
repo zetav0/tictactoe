@@ -6,6 +6,7 @@ import '../models/game_model.dart';
 import '../providers/home_provider.dart';
 import '../providers/profile_provider.dart';
 import '../theme/app_colors.dart';
+import '../theme/playful_theme.dart';
 import '../widgets/bottom_nav.dart';
 import '../widgets/tappable.dart';
 import '../widgets/user_avatar.dart';
@@ -26,114 +27,120 @@ class HomeScreen extends ConsumerWidget {
     final isC4 = gameType == GameType.connectFour;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.transparent,
       appBar: _buildAppBar(context, ref),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height
-                  - MediaQuery.of(context).padding.top
-                  - kToolbarHeight
-                  - 80,
-            ),
-            child: IntrinsicHeight(
-              child: Column(
-                children: [
-                  const Spacer(),
-                  _Logo()
-                      .animate()
-                      .fadeIn(duration: 600.ms)
-                      .slideY(begin: -0.2, curve: Curves.easeOut),
-                  const SizedBox(height: 20),
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 250),
-                    child: Text(
-                      isC4 ? '4 en Raya' : 'Tic Tac Toe',
-                      key: ValueKey(isC4),
-                      style: GoogleFonts.inter(
-                        fontSize: 36,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                        letterSpacing: -0.5,
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppColors.canvasGradient),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height
+                    - MediaQuery.of(context).padding.top
+                    - kToolbarHeight
+                    - 80,
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  children: [
+                    const Spacer(),
+                    _Logo()
+                        .animate()
+                        .fadeIn(duration: 600.ms)
+                        .slideY(begin: -0.2, curve: Curves.easeOut),
+                    const SizedBox(height: 16),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      child: Text(
+                        isC4 ? '4 en Raya' : 'Tic Tac Toe',
+                        key: ValueKey(isC4),
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                          shadows: PlayfulTheme.bubbleShadow(),
+                        ),
                       ),
-                    ),
-                  ).animate().fadeIn(delay: 200.ms),
-                  const SizedBox(height: 6),
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 250),
-                    child: Text(
-                      isC4 ? 'Conecta cuatro en línea.' : 'The classic game of strategy.',
-                      key: ValueKey(isC4),
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
-                        color: Colors.white38,
+                    ).animate().fadeIn(delay: 200.ms),
+                    const SizedBox(height: 6),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      child: Text(
+                        isC4 ? 'Conecta cuatro en línea.' : 'The classic game of strategy.',
+                        key: ValueKey(isC4),
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 15,
+                          color: Colors.white60,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                  ).animate().fadeIn(delay: 300.ms),
-                  const SizedBox(height: 20),
-                  _GameTypePicker(
-                    selected: gameType,
-                    onChanged: (gt) =>
-                        ref.read(gameTypeProvider.notifier).state = gt,
-                  ).animate().fadeIn(delay: 380.ms).slideX(begin: -0.1),
-                  const SizedBox(height: 16),
-                  _ModeButton(
-                    label: 'Player vs Player',
-                    icon: Icons.group_rounded,
-                    selected: mode == GameMode.pvp,
-                    onTap: () =>
-                        ref.read(gameModeProvider.notifier).state = GameMode.pvp,
-                  ).animate().fadeIn(delay: 400.ms).slideX(begin: -0.1),
-                  const SizedBox(height: 12),
-                  _ModeButton(
-                    label: 'Player vs AI',
-                    icon: Icons.smart_toy_rounded,
-                    selected: mode == GameMode.pvAi,
-                    onTap: () =>
-                        ref.read(gameModeProvider.notifier).state = GameMode.pvAi,
-                  ).animate().fadeIn(delay: 500.ms).slideX(begin: -0.1),
-                  const SizedBox(height: 12),
-                  _OnlineButton(
-                    enabled: firebaseReady,
-                    onTap: () => Navigator.push(
-                      context,
-                      _slideRoute(MultiplayerScreen(gameType: gameType)),
-                    ),
-                  ).animate().fadeIn(delay: 560.ms).slideX(begin: -0.1),
-                  const SizedBox(height: 16),
-                  if (mode == GameMode.pvAi) ...[
-                    Text(
-                      'AI DIFFICULTY LEVEL',
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.5,
-                        color: Colors.white38,
+                    ).animate().fadeIn(delay: 300.ms),
+                    const SizedBox(height: 24),
+                    _GameTypePicker(
+                      selected: gameType,
+                      onChanged: (gt) =>
+                          ref.read(gameTypeProvider.notifier).state = gt,
+                    ).animate().fadeIn(delay: 380.ms).slideX(begin: -0.1),
+                    const SizedBox(height: 16),
+                    _ModeButton(
+                      label: 'Player vs Player',
+                      icon: Icons.group_rounded,
+                      selected: mode == GameMode.pvp,
+                      onTap: () =>
+                          ref.read(gameModeProvider.notifier).state = GameMode.pvp,
+                    ).animate().fadeIn(delay: 400.ms).slideX(begin: -0.1),
+                    const SizedBox(height: 12),
+                    _ModeButton(
+                      label: 'Player vs AI',
+                      icon: Icons.smart_toy_rounded,
+                      selected: mode == GameMode.pvAi,
+                      onTap: () =>
+                          ref.read(gameModeProvider.notifier).state = GameMode.pvAi,
+                    ).animate().fadeIn(delay: 500.ms).slideX(begin: -0.1),
+                    const SizedBox(height: 12),
+                    _OnlineButton(
+                      enabled: firebaseReady,
+                      onTap: () => Navigator.push(
+                        context,
+                        _slideRoute(MultiplayerScreen(gameType: gameType)),
                       ),
-                    ).animate().fadeIn(delay: 600.ms),
-                    const SizedBox(height: 10),
-                    _DifficultyPicker(
-                      selected: difficulty,
-                      onChanged: (d) =>
-                          ref.read(difficultyProvider.notifier).state = d,
-                    ).animate().fadeIn(delay: 700.ms),
+                    ).animate().fadeIn(delay: 560.ms).slideX(begin: -0.1),
+                    const SizedBox(height: 16),
+                    if (mode == GameMode.pvAi) ...[
+                      Text(
+                        'AI DIFFICULTY LEVEL',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.5,
+                          color: Colors.white60,
+                        ),
+                      ).animate().fadeIn(delay: 600.ms),
+                      const SizedBox(height: 10),
+                      _DifficultyPicker(
+                        selected: difficulty,
+                        onChanged: (d) =>
+                            ref.read(difficultyProvider.notifier).state = d,
+                      ).animate().fadeIn(delay: 700.ms),
+                      const SizedBox(height: 16),
+                    ],
+                    const Spacer(),
+                    _PlayButton(
+                      onTap: () => Navigator.push(
+                        context,
+                        _slideRoute(
+                          isC4
+                              ? ConnectFourScreen(mode: mode, difficulty: difficulty)
+                              : GameScreen(mode: mode, difficulty: difficulty),
+                        ),
+                      ),
+                    ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.2),
                     const SizedBox(height: 16),
                   ],
-                  const Spacer(),
-                  _PlayButton(
-                    onTap: () => Navigator.push(
-                      context,
-                      _slideRoute(
-                        isC4
-                            ? ConnectFourScreen(mode: mode, difficulty: difficulty)
-                            : GameScreen(mode: mode, difficulty: difficulty),
-                      ),
-                    ),
-                  ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.2),
-                  const SizedBox(height: 16),
-                ],
+                ),
               ),
             ),
           ),
@@ -146,7 +153,7 @@ class HomeScreen extends ConsumerWidget {
   PreferredSizeWidget _buildAppBar(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(profileProvider).valueOrNull;
     return AppBar(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       elevation: 0,
       leading: GestureDetector(
         onTap: () => Navigator.push(
@@ -156,7 +163,7 @@ class HomeScreen extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: profile == null
-              ? const Icon(Icons.settings_rounded, color: Colors.white54)
+              ? const Icon(Icons.settings_rounded, color: Colors.white70)
               : UserAvatar(
                   seed: profile.avatarSeed,
                   imagePath: profile.customImagePath,
@@ -165,19 +172,20 @@ class HomeScreen extends ConsumerWidget {
         ),
       ),
       title: Text(
-        profile != null ? 'HI, ${profile.username.toUpperCase()}' : 'TIC TAC TOE',
-        style: GoogleFonts.inter(
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
+        profile != null ? 'HI, ${profile.username.toUpperCase()}' : 'GAME BLAST',
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
           letterSpacing: 1,
-          color: AppColors.primaryFixedDim,
+          color: Colors.white,
+          shadows: PlayfulTheme.bubbleShadow(),
         ),
       ),
       centerTitle: true,
       actions: const [
         Padding(
           padding: EdgeInsets.all(12),
-          child: Icon(Icons.leaderboard_rounded, color: Colors.white54),
+          child: Icon(Icons.leaderboard_rounded, color: Colors.white70),
         ),
       ],
     );
@@ -191,11 +199,12 @@ class _Logo extends StatelessWidget {
       width: 120,
       height: 120,
       decoration: BoxDecoration(
-        color: AppColors.primaryContainer,
-        borderRadius: BorderRadius.circular(28),
+        color: Colors.white.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withAlpha(80),
+            color: AppColors.canvasGradientTop.withValues(alpha: 0.5),
             blurRadius: 32,
             offset: const Offset(0, 8),
           ),
@@ -233,15 +242,13 @@ class _LogoPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final oPaint = Paint()
-      ..color = AppColors.oColor.withAlpha(200)
+      ..color = AppColors.oColor
       ..strokeWidth = size.width * 0.12
       ..style = PaintingStyle.stroke;
 
     final pad = size.width * 0.12;
-    // X
     canvas.drawLine(Offset(pad, pad), Offset(size.width - pad, size.height - pad), xPaint);
     canvas.drawLine(Offset(size.width - pad, pad), Offset(pad, size.height - pad), xPaint);
-    // O (overlapping circle)
     canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
       size.width * 0.32,
@@ -273,32 +280,55 @@ class _ModeButton extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primaryContainer : AppColors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(16),
+          color: selected
+              ? Colors.white.withValues(alpha: 0.22)
+              : Colors.white.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: selected
-                ? AppColors.primaryFixedDim.withAlpha(80)
-                : AppColors.outlineVariant.withAlpha(60),
+                ? Colors.white.withValues(alpha: 0.6)
+                : Colors.white.withValues(alpha: 0.2),
+            width: selected ? 2 : 1,
           ),
+          boxShadow: selected
+              ? PlayfulTheme.ambientShadow(color: AppColors.primaryContainer, opacity: 0.4)
+              : null,
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: selected ? AppColors.primaryFixedDim : Colors.white54,
-              size: 22,
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: selected
+                    ? Colors.white.withValues(alpha: 0.25)
+                    : Colors.white.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: Colors.white, size: 22),
             ),
             const SizedBox(width: 14),
             Text(
               label,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: selected ? Colors.white : Colors.white60,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
               ),
             ),
+            if (selected) ...[
+              const Spacer(),
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: AppColors.tertiary,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -316,8 +346,9 @@ class _GameTypePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerHigh,
+        color: Colors.black.withValues(alpha: 0.25),
         borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
       ),
       padding: const EdgeInsets.all(4),
       child: Row(
@@ -331,8 +362,9 @@ class _GameTypePicker extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 11),
                 decoration: active
                     ? BoxDecoration(
-                        color: AppColors.primaryContainer,
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(28),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
                       )
                     : null,
                 child: Row(
@@ -343,15 +375,15 @@ class _GameTypePicker extends StatelessWidget {
                           ? Icons.grid_view_rounded
                           : Icons.circle_outlined,
                       size: 16,
-                      color: active ? Colors.white : Colors.white38,
+                      color: active ? Colors.white : Colors.white54,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       gt == GameType.ticTacToe ? 'Tic Tac Toe' : '4 en Raya',
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: active ? Colors.white : Colors.white38,
+                        fontWeight: FontWeight.w700,
+                        color: active ? Colors.white : Colors.white54,
                       ),
                     ),
                   ],
@@ -375,8 +407,9 @@ class _DifficultyPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerHigh,
+        color: Colors.black.withValues(alpha: 0.25),
         borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
       ),
       padding: const EdgeInsets.all(4),
       child: Row(
@@ -390,17 +423,18 @@ class _DifficultyPicker extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: active
                     ? BoxDecoration(
-                        color: AppColors.primaryContainer,
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(28),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
                       )
                     : null,
                 child: Text(
                   d.name[0].toUpperCase() + d.name.substring(1),
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: active ? Colors.white : Colors.white38,
+                    fontWeight: FontWeight.w700,
+                    color: active ? Colors.white : Colors.white54,
                   ),
                 ),
               ),
@@ -424,45 +458,53 @@ class _OnlineButton extends StatelessWidget {
       child: Opacity(
         opacity: enabled ? 1.0 : 0.45,
         child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.tertiaryFixed.withAlpha(70)),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.wifi_rounded, color: AppColors.tertiaryFixed, size: 22),
-            const SizedBox(width: 14),
-            Text(
-              'Online Multiplayer',
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.white60,
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+          decoration: BoxDecoration(
+            color: AppColors.tertiary.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.5)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.tertiary.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.wifi_rounded, color: AppColors.tertiary, size: 22),
               ),
-            ),
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: AppColors.tertiaryFixed.withAlpha(40),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                'NEW',
-                style: GoogleFonts.inter(
-                  fontSize: 10,
+              const SizedBox(width: 14),
+              Text(
+                'Online Multiplayer',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.tertiaryFixed,
-                  letterSpacing: 1,
+                  color: Colors.white,
                 ),
               ),
-            ),
-          ],
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.tertiary,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'NEW',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.onTertiary,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -479,29 +521,24 @@ class _PlayButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 18),
+        padding: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(32),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withAlpha(80),
-              blurRadius: 20,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          color: AppColors.secondary,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: PlayfulTheme.secondaryLip(depth: 6),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.grid_view_rounded, color: Colors.white, size: 22),
+            const Icon(Icons.play_arrow_rounded, color: AppColors.onSecondary, size: 28),
             const SizedBox(width: 10),
             Text(
-              'Play',
-              style: GoogleFonts.inter(
+              'PLAY NOW',
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                color: AppColors.onSecondary,
+                letterSpacing: 0.5,
               ),
             ),
           ],

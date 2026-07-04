@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tic Tac Toe - Playful Edition</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-container": "#f2f2ff",
+                        "outline": "#8d90a0",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-surface": "#e2e2e2",
+                        "on-secondary-fixed-variant": "#604100",
+                        "primary-fixed": "#dbe1ff",
+                        "on-tertiary-fixed": "#002112",
+                        "surface-bright": "#37393a",
+                        "tertiary-fixed-dim": "#5edda0",
+                        "inverse-surface": "#e2e2e2",
+                        "secondary-fixed-dim": "#ffba38",
+                        "on-tertiary": "#003822",
+                        "surface-container-highest": "#333535",
+                        "error": "#ffb4ab",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "tertiary": "#5edda0",
+                        "secondary-container": "#db9900",
+                        "tertiary-container": "#007f53",
+                        "on-primary": "#002a78",
+                        "tertiary-fixed": "#7cfabb",
+                        "on-primary-fixed-variant": "#003da9",
+                        "surface": "#121414",
+                        "inverse-on-surface": "#2f3131",
+                        "on-surface-variant": "#c3c6d7",
+                        "primary": "#b4c5ff",
+                        "on-secondary-fixed": "#281900",
+                        "secondary": "#ffba38",
+                        "surface-variant": "#333535",
+                        "on-background": "#e2e2e2",
+                        "on-secondary": "#432c00",
+                        "surface-container-lowest": "#0c0f0f",
+                        "on-secondary-container": "#513600",
+                        "surface-container": "#1e2020",
+                        "surface-container-high": "#282a2b",
+                        "surface-container-low": "#1a1c1c",
+                        "surface-tint": "#b4c5ff",
+                        "primary-container": "#2b65ec",
+                        "background": "#121414",
+                        "surface-dim": "#121414",
+                        "on-primary-fixed": "#00174b",
+                        "outline-variant": "#434655",
+                        "inverse-primary": "#0553da",
+                        "error-container": "#93000a",
+                        "on-tertiary-container": "#cbffdf",
+                        "on-tertiary-fixed-variant": "#005234",
+                        "secondary-fixed": "#ffdeac"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "margin-desktop": "40px",
+                        "stack-gap": "12px",
+                        "base": "8px",
+                        "margin-mobile": "24px"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #2b65ec;
+            background-image: radial-gradient(#ffffff22 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .btn-3d {
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+            box-shadow: 0 6px 0 0 rgba(0,0,0,0.2);
+        }
+        .btn-3d:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 0 rgba(0,0,0,0.2);
+        }
+        .cell-shadow {
+            box-shadow: inset 0 -4px 0 0 rgba(0,0,0,0.1);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen flex flex-col items-center justify-between overflow-x-hidden">
+<!-- Top AppBar (Customized for Game Context) -->
+<div class="w-full flex items-center bg-transparent p-4 pb-2 justify-between max-w-[600px]">
+<div class="text-white flex size-12 shrink-0 items-center justify-start cursor-pointer">
+<span class="material-symbols-outlined text-3xl">arrow_back</span>
+</div>
+<h1 class="text-white text-display-xl font-extrabold leading-tight tracking-[-0.015em] flex-1 text-center drop-shadow-[0_2px_0_rgba(0,0,0,0.3)]">
+            TIC TAC TOE
+        </h1>
+<div class="flex w-12 items-center justify-end">
+<button class="flex items-center justify-center rounded-full h-10 w-10 bg-white/20 text-white hover:bg-white/30 transition-colors">
+<span class="material-symbols-outlined">info</span>
+</button>
+</div>
+</div>
+<!-- Main Game Container -->
+<main class="flex-1 w-full max-w-[600px] px-margin-mobile flex flex-col gap-6 py-4">
+<!-- Score Cards -->
+<div class="flex gap-4">
+<!-- Player 1 -->
+<div class="flex-1 glass-panel rounded-xl p-4 flex flex-col items-center justify-center gap-2 border-b-4 border-black/20">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center border-2 border-white">
+<span class="material-symbols-outlined text-on-primary text-2xl" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<p class="text-white text-label-md uppercase opacity-80">Player 1</p>
+<p class="text-white text-headline-lg font-extrabold">2</p>
+</div>
+<!-- AI Bot -->
+<div class="flex-1 glass-panel rounded-xl p-4 flex flex-col items-center justify-center gap-2 border-b-4 border-black/20">
+<div class="w-12 h-12 rounded-full bg-secondary flex items-center justify-center border-2 border-white">
+<span class="material-symbols-outlined text-on-secondary text-2xl" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<p class="text-white text-label-md uppercase opacity-80">AI Bot</p>
+<p class="text-white text-headline-lg font-extrabold">1</p>
+</div>
+</div>
+<!-- Turn Indicator -->
+<div class="text-center">
+<h3 class="text-white text-title-md font-extrabold tracking-widest uppercase animate-pulse">
+                TU TURNO: JUGADOR 1
+            </h3>
+</div>
+<!-- Board -->
+<div class="w-full aspect-square bg-surface-container-lowest rounded-[2rem] p-4 shadow-2xl relative overflow-hidden">
+<!-- Decorative inner shadow -->
+<div class="absolute inset-0 pointer-events-none rounded-[2rem] border-[12px] border-black/10"></div>
+<div class="grid grid-cols-3 grid-rows-3 gap-3 h-full">
+<!-- Row 1 -->
+<div class="bg-surface-container-high rounded-2xl cell-shadow flex items-center justify-center cursor-pointer hover:bg-surface-bright transition-colors group">
+<div class="w-16 h-16 rounded-full bg-red-500 border-b-8 border-red-700 shadow-lg" style="transform: perspective(500px) rotateX(20deg);"></div>
+</div>
+<div class="bg-surface-container-high rounded-2xl cell-shadow flex items-center justify-center cursor-pointer hover:bg-surface-bright transition-colors">
+</div>
+<div class="bg-surface-container-high rounded-2xl cell-shadow flex items-center justify-center cursor-pointer hover:bg-surface-bright transition-colors">
+<div class="w-16 h-16 rounded-full bg-secondary border-b-8 border-secondary-container shadow-lg" style="transform: perspective(500px) rotateX(20deg);"></div>
+</div>
+<!-- Row 2 -->
+<div class="bg-surface-container-high rounded-2xl cell-shadow flex items-center justify-center cursor-pointer hover:bg-surface-bright transition-colors">
+</div>
+<div class="bg-surface-container-high rounded-2xl cell-shadow flex items-center justify-center cursor-pointer hover:bg-surface-bright transition-colors">
+<div class="w-16 h-16 rounded-full bg-red-500 border-b-8 border-red-700 shadow-lg" style="transform: perspective(500px) rotateX(20deg);"></div>
+</div>
+<div class="bg-surface-container-high rounded-2xl cell-shadow flex items-center justify-center cursor-pointer hover:bg-surface-bright transition-colors">
+</div>
+<!-- Row 3 -->
+<div class="bg-surface-container-high rounded-2xl cell-shadow flex items-center justify-center cursor-pointer hover:bg-surface-bright transition-colors">
+</div>
+<div class="bg-surface-container-high rounded-2xl cell-shadow flex items-center justify-center cursor-pointer hover:bg-surface-bright transition-colors">
+<div class="w-16 h-16 rounded-full bg-secondary border-b-8 border-secondary-container shadow-lg" style="transform: perspective(500px) rotateX(20deg);"></div>
+</div>
+<div class="bg-surface-container-high rounded-2xl cell-shadow flex items-center justify-center cursor-pointer hover:bg-surface-bright transition-colors">
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<div class="w-full flex justify-center py-4">
+<button class="btn-3d w-full max-w-xs bg-tertiary text-on-tertiary flex items-center justify-center gap-3 py-5 rounded-2xl font-extrabold text-title-md hover:brightness-110 active:brightness-95 transition-all">
+<span class="material-symbols-outlined text-3xl">refresh</span>
+                REINICIAR JUEGO
+            </button>
+</div>
+</main>
+<!-- Shared BottomNavBar (Exactly as defined) -->
+<div class="w-full bg-[#1a2133]">
+<div class="relative flex h-auto w-full flex-col bg-[#111622] dark group/design-root overflow-x-hidden" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
+<div class="flex gap-2 border-t border-[#242e47] bg-[#1a2133] px-4 pb-3 pt-2">
+<a class="just flex flex-1 flex-col items-center justify-end gap-1 rounded-full text-white" href="#">
+<div class="text-white flex h-8 items-center justify-center" data-icon="GameController" data-size="24px" data-weight="fill">
+<svg fill="currentColor" height="24px" viewbox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M247.44,173.75a.68.68,0,0,0,0-.14L231.05,89.44c0-.06,0-.12,0-.18A60.08,60.08,0,0,0,172,40H83.89a59.88,59.88,0,0,0-59,49.52L8.58,173.61a.68.68,0,0,0,0,.14,36,36,0,0,0,60.9,31.71l.35-.37L109.52,160h37l39.71,45.09c.11.13.23.25.35.37A36.08,36.08,0,0,0,212,216a36,36,0,0,0,35.43-42.25ZM104,112H96v8a8,8,0,0,1-16,0v-8H72a8,8,0,0,1,0-16h8V88a8,8,0,0,1,16,0v8h8a8,8,0,0,1,0,16Zm40-8a8,8,0,0,1,8-8h24a8,8,0,0,1,0,16H152A8,8,0,0,1,144,104Zm84.37,87.47a19.84,19.84,0,0,1-12.9,8.23A20.09,20.09,0,0,1,198,194.31L167.8,160H172a60,60,0,0,0,51-28.38l8.74,45A19.82,19.82,0,0,1,228.37,191.47Z"></path>
+</svg>
+</div>
+<p class="text-white text-xs font-medium leading-normal tracking-[0.015em]">Games</p>
+</a>
+<a class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#92a3c8]" href="#">
+<div class="text-[#92a3c8] flex h-8 items-center justify-center" data-icon="ShoppingBag" data-size="24px" data-weight="regular">
+<svg fill="currentColor" height="24px" viewbox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200ZM176,88a48,48,0,0,1-96,0,8,8,0,0,1,16,0,32,32,0,0,0,64,0,8,8,0,0,1,16,0Z"></path>
+</svg>
+</div>
+<p class="text-[#92a3c8] text-xs font-medium leading-normal tracking-[0.015em]">Shop</p>
+</a>
+<a class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#92a3c8]" href="#">
+<div class="text-[#92a3c8] flex h-8 items-center justify-center" data-icon="Trophy" data-size="24px" data-weight="regular">
+<svg fill="currentColor" height="24px" viewbox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M232,64H208V56a16,16,0,0,0-16-16H64A16,16,0,0,0,48,56v8H24A16,16,0,0,0,8,80V96a40,40,0,0,0,40,40h3.65A80.13,80.13,0,0,0,120,191.61V216H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16H136V191.58c31.94-3.23,58.44-25.64,68.08-55.58H208a40,40,0,0,0,40-40V80A16,16,0,0,0,232,64ZM48,120A24,24,0,0,1,24,96V80H48v32q0,4,.39,8Zm144-8.9c0,35.52-28.49,64.64-63.51,64.9H128a64,64,0,0,1-64-64V56H192ZM232,96a24,24,0,0,1-24,24h-.5a81.81,81.81,0,0,0,.5-8.9V80h24Z"></path>
+</svg>
+</div>
+<p class="text-[#92a3c8] text-xs font-medium leading-normal tracking-[0.015em]">Leader</p>
+</a>
+<a class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#92a3c8]" href="#">
+<div class="text-[#92a3c8] flex h-8 items-center justify-center" data-icon="Gear" data-size="24px" data-weight="regular">
+<svg fill="currentColor" height="24px" viewbox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"></path>
+</svg>
+</div>
+<p class="text-[#92a3c8] text-xs font-medium leading-normal tracking-[0.015em]">Settings</p>
+</a>
+</div>
+</div>
+</div>
+<script>
+        // Simple game logic simulation for interactivity
+        const cells = document.querySelectorAll('.grid > div');
+        cells.forEach(cell => {
+            cell.addEventListener('click', () => {
+                if (cell.children.length === 0) {
+                    const sphere = document.createElement('div');
+                    sphere.className = 'w-16 h-16 rounded-full bg-red-500 border-b-8 border-red-700 shadow-lg';
+                    sphere.style.transform = "perspective(500px) rotateX(20deg)";
+                    cell.appendChild(sphere);
+                    
+                    // Simple animation
+                    sphere.animate([
+                        { transform: 'scale(0) perspective(500px) rotateX(20deg)' },
+                        { transform: 'scale(1.1) perspective(500px) rotateX(20deg)' },
+                        { transform: 'scale(1) perspective(500px) rotateX(20deg)' }
+                    ], {
+                        duration: 300,
+                        easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                    });
+                }
+            });
+        });
+
+        // Restart button interaction
+        const restartBtn = document.querySelector('.btn-3d');
+        restartBtn.addEventListener('click', () => {
+            cells.forEach(cell => {
+                cell.innerHTML = '';
+            });
+        });
+    </script>
+</body></html>

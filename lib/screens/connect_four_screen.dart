@@ -7,6 +7,7 @@ import '../controllers/base_controller.dart';
 import '../controllers/connect_four_controller.dart';
 import '../models/game_model.dart';
 import '../theme/app_colors.dart';
+import '../theme/playful_theme.dart';
 import '../utils/connect_four_logic.dart';
 import '../widgets/bottom_nav.dart';
 import '../widgets/connect_four_board.dart';
@@ -47,7 +48,6 @@ class _ConnectFourScreenState extends State<ConnectFourScreen> {
     final status = _controller.state.status;
     if (status != GameStatus.playing) {
       _overlayTimer?.cancel();
-      // Delay = staggered win animation (4 cells × 160ms + 450ms bounce + 800ms pulse)
       _overlayTimer = Timer(const Duration(milliseconds: 2200), () {
         if (mounted) setState(() => _overlayVisible = true);
       });
@@ -68,31 +68,43 @@ class _ConnectFourScreenState extends State<ConnectFourScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: AppColors.background,
       appBar: _buildAppBar(),
       body: Stack(
         children: [
-          Column(
-            children: [
-              ScoreCards(controller: _controller),
-              TurnIndicator(controller: _controller),
-              Expanded(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 440),
-                      child: AspectRatio(
-                        aspectRatio: c4Cols / c4Rows,
-                        child: ConnectFourBoard(controller: _controller),
+          // Decorative atmospheric blobs
+          Positioned(
+            top: 60, left: -40,
+            child: _Blob(color: AppColors.primaryContainer, size: 160),
+          ),
+          Positioned(
+            bottom: 140, right: -50,
+            child: _Blob(color: AppColors.secondary, size: 200),
+          ),
+          SafeArea(
+            child: Column(
+              children: [
+                ScoreCards(controller: _controller, glassStyle: false),
+                TurnIndicator(controller: _controller),
+                Expanded(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 440),
+                        child: AspectRatio(
+                          aspectRatio: c4Cols / c4Rows,
+                          child: ConnectFourBoard(controller: _controller),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              _RestartButton(onPressed: _controller.reset),
-              const SizedBox(height: 8),
-            ],
+                _RestartButton(onPressed: _controller.reset),
+                const SizedBox(height: 8),
+              ],
+            ),
           ),
           if (_overlayVisible && _controller.state.status != GameStatus.playing)
             C4GameOverOverlay(
@@ -111,28 +123,54 @@ class _ConnectFourScreenState extends State<ConnectFourScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       elevation: 0,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.primaryFixedDim),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
         onPressed: () => Navigator.pop(context),
       ),
       title: Text(
         '4 EN RAYA',
-        style: GoogleFonts.inter(
+        style: GoogleFonts.plusJakartaSans(
           fontSize: 20,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w800,
           letterSpacing: 1,
-          color: AppColors.primaryFixedDim,
+          color: AppColors.secondary, // Yellow accent — matches stitch
         ),
       ),
       centerTitle: true,
       actions: [
         IconButton(
-          icon: const Icon(Icons.leaderboard_rounded, color: AppColors.primaryFixedDim),
+          icon: const Icon(Icons.leaderboard_rounded, color: Colors.white70),
           onPressed: () {},
         ),
       ],
+    );
+  }
+}
+
+// ── Atmospheric blur blob ─────────────────────────────────────────────────────
+
+class _Blob extends StatelessWidget {
+  final Color color;
+  final double size;
+  const _Blob({required this.color, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.1),
+            blurRadius: 60,
+            spreadRadius: 20,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -153,20 +191,21 @@ class _RestartButton extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
-            color: AppColors.primaryContainer,
+            color: AppColors.tertiary,
             borderRadius: BorderRadius.circular(20),
+            boxShadow: PlayfulTheme.tertiaryLip(depth: 4),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.refresh_rounded, color: AppColors.onPrimary),
+              const Icon(Icons.refresh_rounded, color: AppColors.onTertiary, size: 22),
               const SizedBox(width: 8),
               Text(
                 'Restart Game',
-                style: GoogleFonts.inter(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.onPrimary,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.onTertiary,
                 ),
               ),
             ],
@@ -177,7 +216,7 @@ class _RestartButton extends StatelessWidget {
   }
 }
 
-// ── Game Over Overlay (shared with remote screen) ──────────────────────────────
+// ── Game Over Overlay ──────────────────────────────────────────────────────────
 
 class C4GameOverOverlay extends StatelessWidget {
   final BaseGameController controller;
@@ -194,54 +233,60 @@ class C4GameOverOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = controller.state;
-    final (String title, String emoji, Color color) = switch (state.status) {
+    final (String title, String emoji, Color accentColor) = switch (state.status) {
       GameStatus.xWins => (
           '${controller.player1Label} Wins!',
           '🎉',
-          AppColors.primaryFixedDim,
+          AppColors.xColor,
         ),
       GameStatus.oWins => (
           '${controller.player2Label} Wins!',
           '🎉',
-          AppColors.tertiaryFixed,
+          AppColors.oColor,
         ),
-      GameStatus.draw => ("It's a Draw!", '🤝', Colors.white54),
+      GameStatus.draw => ("It's a Draw!", '🤝', Colors.white70),
       GameStatus.playing => ('', '', Colors.transparent),
     };
 
     return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
       child: Container(
-        color: Colors.black.withAlpha(130),
+        color: Colors.black.withValues(alpha: 0.5),
         child: Center(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 28),
             padding: const EdgeInsets.fromLTRB(28, 32, 28, 28),
             decoration: BoxDecoration(
-              color: AppColors.surfaceContainer.withAlpha(230),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: color.withAlpha(70)),
+              color: AppColors.surfaceContainer.withValues(alpha: 0.92),
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(color: accentColor.withValues(alpha: 0.4)),
               boxShadow: [
-                BoxShadow(color: color.withAlpha(50), blurRadius: 40),
+                BoxShadow(
+                  color: accentColor.withValues(alpha: 0.3),
+                  blurRadius: 40,
+                ),
               ],
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(emoji, style: const TextStyle(fontSize: 52)),
+                Text(emoji, style: const TextStyle(fontSize: 56)),
                 const SizedBox(height: 10),
                 Text(
                   title,
-                  style: GoogleFonts.inter(
-                    fontSize: 26,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 28,
                     fontWeight: FontWeight.w800,
-                    color: color,
+                    color: accentColor,
+                    shadows: PlayfulTheme.bubbleShadow(),
                   ),
                 ),
                 const SizedBox(height: 28),
                 _OverlayButton(
                   label: 'Play Again',
-                  color: AppColors.primary,
+                  color: AppColors.secondary,
+                  textColor: AppColors.onSecondary,
+                  shadowColor: AppColors.secondaryContainer,
                   onTap: onRestart,
                 ),
                 const SizedBox(height: 12),
@@ -267,6 +312,7 @@ class _OverlayButton extends StatefulWidget {
   final String label;
   final Color color;
   final Color textColor;
+  final Color? shadowColor;
   final VoidCallback onTap;
 
   const _OverlayButton({
@@ -274,6 +320,7 @@ class _OverlayButton extends StatefulWidget {
     required this.color,
     required this.onTap,
     this.textColor = Colors.white,
+    this.shadowColor,
   });
 
   @override
@@ -295,17 +342,23 @@ class _OverlayButtonState extends State<_OverlayButton> {
         duration: const Duration(milliseconds: 80),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 15),
+          padding: EdgeInsets.only(
+            top: 16,
+            bottom: _pressed ? 16 : (widget.shadowColor != null ? 12 : 16),
+          ),
           decoration: BoxDecoration(
             color: widget.color,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: widget.shadowColor != null && !_pressed
+                ? PlayfulTheme.lipShadow(widget.shadowColor!, depth: 4)
+                : null,
           ),
           child: Text(
             widget.label,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 16,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w800,
               color: widget.textColor,
             ),
           ),

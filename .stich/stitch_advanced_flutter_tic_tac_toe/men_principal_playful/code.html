@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Playful Games - Game Blast</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#cbffdf",
+                    "surface-container-low": "#1a1c1c",
+                    "tertiary-fixed-dim": "#5edda0",
+                    "outline": "#8d90a0",
+                    "on-error": "#690005",
+                    "inverse-surface": "#e2e2e2",
+                    "on-primary": "#002a78",
+                    "on-primary-container": "#f2f2ff",
+                    "secondary-container": "#db9900",
+                    "error": "#ffb4ab",
+                    "background": "#121414",
+                    "on-background": "#e2e2e2",
+                    "surface-tint": "#b4c5ff",
+                    "outline-variant": "#434655",
+                    "on-primary-fixed-variant": "#003da9",
+                    "surface-bright": "#37393a",
+                    "surface-variant": "#333535",
+                    "error-container": "#93000a",
+                    "tertiary-container": "#007f53",
+                    "tertiary": "#5edda0",
+                    "on-secondary-container": "#513600",
+                    "primary-fixed": "#dbe1ff",
+                    "surface-container-lowest": "#0c0f0f",
+                    "secondary": "#ffba38",
+                    "on-secondary": "#432c00",
+                    "inverse-primary": "#0553da",
+                    "surface-container-high": "#282a2b",
+                    "on-surface": "#e2e2e2",
+                    "on-tertiary-fixed": "#002112",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "primary": "#b4c5ff",
+                    "primary-container": "#2b65ec",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-fixed": "#7cfabb",
+                    "surface-container-highest": "#333535",
+                    "on-surface-variant": "#c3c6d7",
+                    "secondary-fixed": "#ffdeac",
+                    "surface-dim": "#121414",
+                    "on-primary-fixed": "#00174b",
+                    "on-tertiary": "#003822",
+                    "on-secondary-fixed-variant": "#604100",
+                    "inverse-on-surface": "#2f3131",
+                    "surface-container": "#1e2020",
+                    "secondary-fixed-dim": "#ffba38",
+                    "surface": "#121414",
+                    "on-tertiary-fixed-variant": "#005234",
+                    "on-secondary-fixed": "#281900"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px",
+                    "btn": "24px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "margin-mobile": "24px",
+                    "stack-gap": "12px",
+                    "margin-desktop": "40px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "display-xl": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "title-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "display-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "800"}],
+                    "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "800"}],
+                    "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(180deg, #1e4de2 0%, #002a78 100%);
+            overscroll-behavior: none;
+        }
+
+        .bubble-text {
+            filter: drop-shadow(0 6px 0 rgba(0,0,0,0.2));
+            -webkit-text-stroke: 2px rgba(255,255,255,0.2);
+        }
+
+        .squishy-btn {
+            position: relative;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .squishy-btn:active {
+            transform: translateY(4px);
+            box-shadow: none !important;
+        }
+
+        .inner-glow {
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.4);
+        }
+
+        .lip-orange { box-shadow: 0 6px 0 #9c6a00; }
+        .lip-green { box-shadow: 0 6px 0 #005e3a; }
+        .lip-purple { box-shadow: 0 6px 0 #5b1a8c; }
+
+        .medal-shimmer {
+            animation: shimmer 3s infinite ease-in-out;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .bg-pattern {
+            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen text-on-background flex flex-col items-center overflow-x-hidden">
+<!-- Subtle atmospheric layer -->
+<div class="fixed inset-0 bg-pattern pointer-events-none"></div>
+<!-- Top App Bar -->
+<header class="flex justify-between items-center w-full px-margin-mobile pt-4 max-w-[600px] mx-auto z-40 relative">
+<button class="w-12 h-12 flex items-center justify-center bg-white/10 rounded-full hover:scale-105 transition-transform backdrop-blur-sm">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<div class="flex flex-col items-center">
+<div class="relative medal-shimmer">
+<span class="material-symbols-outlined text-secondary text-5xl" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+<div class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-[#1e4de2]"></div>
+</div>
+<span class="text-label-md font-label-md text-white mt-[-4px]">Medal</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-[600px] flex flex-col items-center px-margin-mobile pt-12 pb-32 relative z-10">
+<!-- Logo Section -->
+<div class="flex flex-col items-center mb-12">
+<div class="flex gap-1 mb-2">
+<span class="text-[64px] leading-none font-black text-primary bubble-text italic">G</span>
+<span class="text-[64px] leading-none font-black text-secondary bubble-text italic">A</span>
+<span class="text-[64px] leading-none font-black text-tertiary bubble-text italic">M</span>
+<span class="text-[64px] leading-none font-black text-error bubble-text italic">E</span>
+</div>
+<div class="flex gap-1 items-center relative">
+<span class="text-[48px] leading-none font-black text-[#66eaff] bubble-text italic">BLAST</span>
+<span class="material-symbols-outlined absolute -top-8 -right-6 text-yellow-400 text-5xl rotate-12" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<p class="text-label-md font-label-md text-primary/80 mt-2 uppercase tracking-[0.2em]">ADVENTURE MASTER</p>
+</div>
+<!-- Consecutive Daily Victories Card -->
+<section class="w-full bg-white/90 backdrop-blur-md rounded-[32px] p-6 mb-10 shadow-xl border-t-4 border-white/40 flex flex-col items-center relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-10 bg-on-primary-fixed-variant/10 flex items-center justify-center">
+<span class="text-on-surface-variant font-bold text-[12px] uppercase tracking-wider">Consecutive Daily Victories</span>
+</div>
+<div class="mt-8 flex items-center justify-center gap-8">
+<div class="relative">
+<div class="w-24 h-24 bg-gradient-to-b from-primary-container to-on-primary-fixed-variant rounded-full flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-white text-5xl" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<div class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-tertiary px-4 py-1 rounded-full border-2 border-white shadow-lg">
+<span class="text-on-tertiary font-bold text-xs uppercase">WIN</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-on-primary-fixed-variant font-black text-5xl italic">x0</span>
+</div>
+<div class="w-8 h-8 bg-surface-container-highest/20 rounded-full border-2 border-surface-container-highest/40 flex items-center justify-center">
+<span class="material-symbols-outlined text-surface-container-highest/40 text-xl">check</span>
+</div>
+</div>
+</section>
+<!-- Primary Action Buttons -->
+<nav class="w-full flex flex-col gap-stack-gap">
+<!-- Orange: Tic Tac Toe -->
+<button class="squishy-btn group w-full h-[72px] bg-secondary-container lip-orange rounded-btn flex items-center px-6 gap-4">
+<div class="w-12 h-12 flex items-center justify-center bg-white/20 rounded-2xl inner-glow">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+</div>
+<span class="text-white text-headline-lg-mobile font-headline-lg-mobile italic">Tic Tac Toe</span>
+<div class="ml-auto relative">
+<div class="w-4 h-4 bg-red-500 rounded-full border-2 border-secondary-container shadow-md"></div>
+</div>
+</button>
+<!-- Green: 4 in a Row -->
+<button class="squishy-btn group w-full h-[72px] bg-tertiary-container lip-green rounded-btn flex items-center px-6 gap-4">
+<div class="w-12 h-12 flex items-center justify-center bg-white/20 rounded-2xl inner-glow">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">more_horiz</span>
+</div>
+<span class="text-white text-headline-lg-mobile font-headline-lg-mobile italic">4 in a Row</span>
+</button>
+<!-- Purple: Settings (Representing "More Games" but as Settings per prompt) -->
+<button class="squishy-btn group w-full h-[72px] bg-primary-container lip-purple rounded-btn flex items-center px-6 gap-4">
+<div class="w-12 h-12 flex items-center justify-center bg-white/20 rounded-2xl inner-glow">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">settings</span>
+</div>
+<span class="text-white text-headline-lg-mobile font-headline-lg-mobile italic">Settings</span>
+<div class="ml-auto">
+<div class="w-4 h-4 bg-red-500 rounded-full border-2 border-primary-container shadow-md"></div>
+</div>
+</button>
+</nav>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-10 pt-2 bg-surface-container dark:bg-surface-container rounded-t-xl shadow-[0_-4px_10px_rgba(0,0,0,0.15)] border-t-4 border-surface-container-highest">
+<!-- Games Tab (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-4 py-2 border-b-4 border-on-secondary-fixed-variant scale-95 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sports_esports</span>
+<span class="text-label-md font-label-md">Games</span>
+</a>
+<!-- Shop Tab -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-bright transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">shopping_bag</span>
+<span class="text-label-md font-label-md">Shop</span>
+</a>
+<!-- Leader Tab -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-bright transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">leaderboard</span>
+<span class="text-label-md font-label-md">Leader</span>
+</a>
+<!-- Settings Tab -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-bright transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions for button presses
+        document.querySelectorAll('.squishy-btn').forEach(button => {
+            button.addEventListener('touchstart', () => {
+                button.style.transform = 'translateY(4px)';
+                button.style.boxShadow = 'none';
+            });
+            button.addEventListener('touchend', () => {
+                button.style.transform = 'translateY(0)';
+                // Restoration handled by CSS classes for standard interaction
+            });
+        });
+
+        // Floating particles background effect
+        function createParticle() {
+            const particle = document.createElement('div');
+            const size = Math.random() * 8 + 4;
+            const startX = Math.random() * window.innerWidth;
+            const duration = Math.random() * 15 + 10;
+            
+            particle.style.position = 'fixed';
+            particle.style.bottom = '-20px';
+            particle.style.left = `${startX}px`;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            particle.style.borderRadius = '50%';
+            particle.style.pointerEvents = 'none';
+            particle.style.zIndex = '1';
+            
+            document.body.appendChild(particle);
+            
+            const anim = particle.animate([
+                { transform: 'translateY(0) scale(1)', opacity: 0.1 },
+                { transform: `translateY(-${window.innerHeight + 50}px) scale(2)`, opacity: 0 }
+            ], {
+                duration: duration * 1000,
+                easing: 'linear'
+            });
+            
+            anim.onfinish = () => particle.remove();
+        }
+
+        setInterval(createParticle, 1000);
+    </script>
+</body></html>

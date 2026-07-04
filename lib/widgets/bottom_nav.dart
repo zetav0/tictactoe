@@ -13,11 +13,18 @@ class AppBottomNav extends ConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLow.withAlpha(200),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
-          top: BorderSide(color: AppColors.outlineVariant.withAlpha(60)),
+          top: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
       child: SafeArea(
         top: false,
@@ -76,6 +83,13 @@ class _NavItem extends StatelessWidget {
             ? BoxDecoration(
                 color: AppColors.primaryContainer,
                 borderRadius: BorderRadius.circular(32),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primaryContainer.withValues(alpha: 0.4),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               )
             : null,
         child: Column(
@@ -83,16 +97,16 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: active ? AppColors.onPrimary : Colors.white54,
+              color: active ? Colors.white : Colors.white38,
               size: 22,
             ),
             const SizedBox(height: 2),
             Text(
               label,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: active ? AppColors.onPrimary : Colors.white54,
+                fontWeight: FontWeight.w700,
+                color: active ? Colors.white : Colors.white38,
               ),
             ),
           ],

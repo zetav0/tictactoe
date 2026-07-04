@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Playful Games - 4 in a Row</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+        }
+        .chip-red {
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #93000a);
+            box-shadow: inset -4px -4px 8px rgba(0,0,0,0.3), 0 4px 6px rgba(0,0,0,0.2);
+        }
+        .chip-yellow {
+            background: radial-gradient(circle at 30% 30%, #ffdeac, #db9900);
+            box-shadow: inset -4px -4px 8px rgba(0,0,0,0.3), 0 4px 6px rgba(0,0,0,0.2);
+        }
+        .gloss-highlight {
+            position: absolute;
+            top: 15%;
+            left: 15%;
+            width: 30%;
+            height: 30%;
+            background: rgba(255, 255, 255, 0.4);
+            filter: blur(2px);
+            border-radius: 50%;
+        }
+        .slot-inner-shadow {
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
+        }
+        .btn-3d-press:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--tw-shadow-color);
+        }
+        .game-board-container {
+            perspective: 1000px;
+        }
+        .game-board {
+            transform: rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#cbffdf",
+                        "surface-container-low": "#1a1c1c",
+                        "tertiary-fixed-dim": "#5edda0",
+                        "outline": "#8d90a0",
+                        "on-error": "#690005",
+                        "inverse-surface": "#e2e2e2",
+                        "on-primary": "#002a78",
+                        "on-primary-container": "#f2f2ff",
+                        "secondary-container": "#db9900",
+                        "error": "#ffb4ab",
+                        "background": "#121414",
+                        "on-background": "#e2e2e2",
+                        "surface-tint": "#b4c5ff",
+                        "outline-variant": "#434655",
+                        "on-primary-fixed-variant": "#003da9",
+                        "surface-bright": "#37393a",
+                        "surface-variant": "#333535",
+                        "error-container": "#93000a",
+                        "tertiary-container": "#007f53",
+                        "tertiary": "#5edda0",
+                        "on-secondary-container": "#513600",
+                        "primary-fixed": "#dbe1ff",
+                        "surface-container-lowest": "#0c0f0f",
+                        "secondary": "#ffba38",
+                        "on-secondary": "#432c00",
+                        "inverse-primary": "#0553da",
+                        "surface-container-high": "#282a2b",
+                        "on-surface": "#e2e2e2",
+                        "on-tertiary-fixed": "#002112",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary": "#b4c5ff",
+                        "primary-container": "#2b65ec",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed": "#7cfabb",
+                        "surface-container-highest": "#333535",
+                        "on-surface-variant": "#c3c6d7",
+                        "secondary-fixed": "#ffdeac",
+                        "surface-dim": "#121414",
+                        "on-primary-fixed": "#00174b",
+                        "on-tertiary": "#003822",
+                        "on-secondary-fixed-variant": "#604100",
+                        "inverse-on-surface": "#2f3131",
+                        "surface-container": "#1e2020",
+                        "secondary-fixed-dim": "#ffba38",
+                        "surface": "#121414",
+                        "on-tertiary-fixed-variant": "#005234",
+                        "on-secondary-fixed": "#281900"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "margin-mobile": "24px",
+                        "stack-gap": "12px",
+                        "margin-desktop": "40px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "display-xl": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "title-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "display-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "800"}],
+                        "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "800"}],
+                        "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-lg min-h-screen flex flex-col overflow-x-hidden">
+<!-- Top AppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-transparent flex justify-between items-center px-margin-mobile pt-4 max-w-[600px] mx-auto">
+<div class="flex items-center gap-2 hover:scale-105 transition-transform cursor-pointer">
+<span class="material-symbols-outlined text-on-background">menu</span>
+</div>
+<h1 class="text-headline-lg-mobile font-headline-lg-mobile font-black text-secondary">Playful Games</h1>
+<div class="flex items-center gap-2 hover:scale-105 transition-transform cursor-pointer">
+<span class="material-symbols-outlined text-on-background">military_tech</span>
+</div>
+</header>
+<main class="flex-1 mt-20 mb-32 px-margin-mobile max-w-[600px] mx-auto w-full flex flex-col items-center">
+<!-- Score Section -->
+<div class="w-full flex justify-between gap-stack-gap mb-8">
+<!-- Player 1 Score Card -->
+<div class="flex-1 bg-surface-container rounded-2xl p-4 border border-outline-variant shadow-[0_4px_0_#434655] flex flex-col items-center gap-1">
+<div class="bg-primary-container rounded-full p-2 mb-2">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<span class="text-label-md font-label-md text-on-surface-variant">Player 1</span>
+<span class="text-headline-lg-mobile font-headline-lg-mobile text-primary">04</span>
+</div>
+<!-- AI Score Card -->
+<div class="flex-1 bg-surface-container rounded-2xl p-4 border border-outline-variant shadow-[0_4px_0_#434655] flex flex-col items-center gap-1">
+<div class="bg-secondary-container rounded-full p-2 mb-2">
+<span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<span class="text-label-md font-label-md text-on-surface-variant">AI Bot</span>
+<span class="text-headline-lg-mobile font-headline-lg-mobile text-secondary">02</span>
+</div>
+</div>
+<!-- Game Board -->
+<div class="game-board-container w-full aspect-[7/6] bg-primary-container rounded-3xl p-4 border-b-8 border-primary shadow-2xl relative">
+<!-- Board Holes Grid (7x6) -->
+<div class="grid grid-cols-7 grid-rows-6 gap-2 h-full" id="board">
+<!-- Javascript will populate this or we can hardcode for the visual design -->
+<!-- Column 1 -->
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative overflow-hidden h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative overflow-hidden h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative overflow-hidden h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative overflow-hidden h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative overflow-hidden h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative overflow-hidden h-full aspect-square">
+<div class="chip-red w-[85%] h-[85%] rounded-full absolute">
+<div class="gloss-highlight"></div>
+</div>
+</div>
+<!-- Column 2 -->
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square">
+<div class="chip-yellow w-[85%] h-[85%] rounded-full absolute">
+<div class="gloss-highlight"></div>
+</div>
+</div>
+<!-- Column 3 -->
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square">
+<div class="chip-red w-[85%] h-[85%] rounded-full absolute">
+<div class="gloss-highlight"></div>
+</div>
+</div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square">
+<div class="chip-yellow w-[85%] h-[85%] rounded-full absolute">
+<div class="gloss-highlight"></div>
+</div>
+</div>
+<!-- Column 4 (Middle) -->
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square">
+<div class="chip-red w-[85%] h-[85%] rounded-full absolute">
+<div class="gloss-highlight"></div>
+</div>
+</div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square">
+<div class="chip-red w-[85%] h-[85%] rounded-full absolute">
+<div class="gloss-highlight"></div>
+</div>
+</div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square">
+<div class="chip-yellow w-[85%] h-[85%] rounded-full absolute">
+<div class="gloss-highlight"></div>
+</div>
+</div>
+<!-- Column 5 -->
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square">
+<div class="chip-yellow w-[85%] h-[85%] rounded-full absolute">
+<div class="gloss-highlight"></div>
+</div>
+</div>
+<!-- Column 6 -->
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<!-- Column 7 -->
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+<div class="bg-primary/20 rounded-full slot-inner-shadow flex items-center justify-center relative h-full aspect-square"></div>
+</div>
+</div>
+<!-- Action Area -->
+<div class="w-full flex flex-col gap-4 mt-12 items-center">
+<button class="btn-3d-press w-full py-4 bg-tertiary text-on-tertiary font-bold text-title-md rounded-2xl border-b-4 border-on-tertiary-fixed-variant shadow-lg flex items-center justify-center gap-3 active:translate-y-1 active:border-b-0 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">refresh</span>
+                Restart Game
+            </button>
+<p class="text-label-md font-label-md text-outline uppercase tracking-widest mt-4">Current Turn: Player 1</p>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-10 pt-2 bg-surface-container dark:bg-surface-container rounded-t-xl shadow-[0_-4px_10px_rgba(0,0,0,0.15)] border-t-4 border-surface-container-highest">
+<div class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-4 py-2 border-b-4 border-on-secondary-fixed-variant scale-95 transition-all cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sports_esports</span>
+<span class="text-label-md font-label-md">Games</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-bright transition-colors cursor-pointer">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="text-label-md font-label-md">Shop</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-bright transition-colors cursor-pointer">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="text-label-md font-label-md">Leader</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-bright transition-colors cursor-pointer">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</div>
+</nav>
+<!-- Decorative background elements -->
+<div class="fixed top-20 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl -z-10"></div>
+<div class="fixed bottom-40 -right-10 w-60 h-60 bg-secondary/10 rounded-full blur-3xl -z-10"></div>
+<script>
+        // Simple micro-interaction for board slots
+        document.querySelectorAll('.slot-inner-shadow').forEach(slot => {
+            slot.addEventListener('mouseenter', () => {
+                if (!slot.querySelector('.chip-red, .chip-yellow')) {
+                    slot.style.backgroundColor = 'rgba(180, 197, 255, 0.4)';
+                }
+            });
+            slot.addEventListener('mouseleave', () => {
+                slot.style.backgroundColor = 'rgba(180, 197, 255, 0.2)';
+            });
+        });
+    </script>
+</body></html>

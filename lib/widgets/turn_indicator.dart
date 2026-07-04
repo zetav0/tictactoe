@@ -18,8 +18,8 @@ class TurnIndicator extends StatelessWidget {
         final state = controller.state;
 
         final (String text, Color color, IconData icon) = switch (state.status) {
-          GameStatus.xWins => ('Player 1 wins! 🎉', AppColors.primaryFixedDim, Icons.emoji_events),
-          GameStatus.oWins => ('${controller.player2Label} wins! 🎉', AppColors.tertiaryFixed, Icons.emoji_events),
+          GameStatus.xWins => ('Player 1 wins! 🎉', AppColors.xColor, Icons.emoji_events),
+          GameStatus.oWins => ('${controller.player2Label} wins! 🎉', AppColors.oColor, Icons.emoji_events),
           GameStatus.draw => ("It's a draw!", Colors.white54, Icons.handshake),
           GameStatus.playing => _playingLabel(state, controller),
         };
@@ -32,9 +32,9 @@ class TurnIndicator extends StatelessWidget {
             duration: const Duration(milliseconds: 300),
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             decoration: BoxDecoration(
-              color: color.withAlpha(28),
+              color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: color.withAlpha(60)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
             ),
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 260),
@@ -58,10 +58,10 @@ class TurnIndicator extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     text,
-                    style: GoogleFonts.inter(
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: color,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
                     ),
                   ),
                 ],
@@ -85,8 +85,8 @@ class TurnIndicator extends StatelessWidget {
   ) {
     final msg = controller.turnMessage;
     if (state.currentPlayer == CellValue.x) {
-      return (msg, AppColors.primaryFixedDim, Icons.sports_esports);
+      return (msg, AppColors.xColor, Icons.sports_esports);
     }
-    return (msg, AppColors.tertiaryFixed, Icons.sports_esports);
+    return (msg, AppColors.oColor, Icons.sports_esports);
   }
 }

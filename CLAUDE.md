@@ -8,9 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Run the app (hot reload available with 'r' in terminal)
 flutter run
 
-# Run on a specific device
+# Run on a specific device (mobile-first project; Chrome is the desktop test target)
 flutter run -d chrome        # Web
-flutter run -d linux         # Linux desktop
 
 # Tests
 flutter test                          # All tests
