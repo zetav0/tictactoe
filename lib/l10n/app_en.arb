@@ -1,0 +1,102 @@
+{
+  "@@locale": "en",
+
+  "gameTicTacToe": "Tic Tac Toe",
+  "gameConnectFour": "Connect Four",
+  "tttTagline": "The classic game of strategy.",
+  "c4Tagline": "Connect four in a line.",
+  "hiUser": "HI, {name}",
+  "@hiUser": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "playerVsPlayer": "Player vs Player",
+  "playerVsAi": "Player vs AI",
+  "onlineMultiplayer": "Online Multiplayer",
+  "badgeNew": "NEW",
+  "aiDifficultyLevel": "AI DIFFICULTY LEVEL",
+  "difficultyEasy": "Easy",
+  "difficultyMedium": "Medium",
+  "difficultyHard": "Hard",
+  "playNow": "PLAY NOW",
+
+  "navPlay": "Play",
+  "navHistory": "History",
+  "navProfile": "Profile",
+
+  "restartGame": "Restart Game",
+  "playAgain": "Play Again",
+  "home": "Home",
+  "playerWins": "{name} Wins!",
+  "@playerWins": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "itsADraw": "It's a Draw!",
+  "yourTurn": "Your turn!",
+  "aiThinking": "AI thinking...",
+  "player2Turn": "Player 2's turn!",
+  "opponentTurn": "Opponent's turn...",
+  "labelPlayer1": "Player 1",
+  "labelPlayer2": "Player 2",
+  "labelAi": "AI",
+  "labelOpponent": "Opponent",
+
+  "createARoom": "Create a Room",
+  "createRoomSubtitle": "Start a new game and share the code with a friend.",
+  "createRoom": "Create Room",
+  "orDivider": "OR",
+  "joinARoom": "Join a Room",
+  "joinRoomSubtitle": "Enter the 6-character code your opponent shared.",
+  "joinRoom": "Join Room",
+  "invalidCode": "Please enter a valid 6-character code.",
+  "roomNotFound": "Room \"{code}\" not found. Check the code and try again.",
+  "@roomNotFound": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "roomFull": "Room \"{code}\" is already full.",
+  "@roomFull": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "wrongGameMode": "Wrong game mode",
+  "wrongGameModeContent": "Room \"{code}\" is a {roomGame} game, but you have {selectedGame} selected.\n\nGo back to the home screen and select {roomGame} to join this room.",
+  "@wrongGameModeContent": {
+    "placeholders": {
+      "code": {"type": "String"},
+      "roomGame": {"type": "String"},
+      "selectedGame": {"type": "String"}
+    }
+  },
+  "gotIt": "Got it",
+
+  "onlineGame": "ONLINE GAME",
+  "shareCode": "Share this code\nwith your opponent",
+  "codeCopied": "Code copied to clipboard!",
+  "waitingForOpponent": "Waiting for opponent...",
+
+  "opponentLeft": "Opponent left",
+  "opponentDisconnected": "Your opponent disconnected.",
+  "backToMenu": "Back to Menu",
+  "leaveGame": "Leave game?",
+  "leaveGameWarning": "The room will be deleted for both players.",
+  "stay": "Stay",
+  "leave": "Leave",
+
+  "welcome": "Welcome!",
+  "setupProfileSubtitle": "Set up your profile to get started.",
+  "yourName": "YOUR NAME",
+  "enterUsername": "Enter your username",
+  "chooseYourAvatar": "CHOOSE YOUR AVATAR",
+  "getStarted": "Get Started",
+  "editProfile": "EDIT PROFILE",
+  "tapToChangeAvatar": "Tap to change avatar",
+  "username": "USERNAME",
+  "saveChanges": "Save Changes",
+  "chooseAvatar": "Choose Avatar"
+}

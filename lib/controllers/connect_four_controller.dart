@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:math';
 import '../models/game_model.dart';
 import '../services/connect_four_ai.dart';
 import '../services/sound_service.dart';
 import '../utils/connect_four_logic.dart';
+import 'base_controller.dart';
 import 'connect_four_base_controller.dart';
 
 class ConnectFourController extends ConnectFourBaseController {
@@ -19,30 +21,45 @@ class ConnectFourController extends ConnectFourBaseController {
   ConnectFourController({required this.mode, required this.difficulty})
       : _state = GameState(
           board: List.filled(c4Rows * c4Cols, CellValue.empty),
-          currentPlayer: CellValue.x,
+          currentPlayer: _randomStarter(),
           status: GameStatus.playing,
           scoreX: 0,
           scoreO: 0,
-        );
+        ) {
+    _scheduleAiMoveIfNeeded();
+  }
+
+  static CellValue _randomStarter() =>
+      Random().nextBool() ? CellValue.x : CellValue.o;
+
+  void _scheduleAiMoveIfNeeded() {
+    if (_state.status == GameStatus.playing && !isMyTurn) {
+      // Hard spends ~½s searching in an isolate, so it starts sooner; the
+      // total response time stays close to the simpler levels' fixed delay.
+      final delayMs = difficulty == AIDifficulty.hard ? 250 : 700;
+      Timer(Duration(milliseconds: delayMs), _doAiMove);
+    }
+  }
 
   @override
   GameState get state => _state;
 
   @override
-  String get player1Label => 'PLAYER 1';
+  PlayerLabel get player1Label => PlayerLabel.player1;
 
   @override
-  String get player2Label => mode == GameMode.pvAi ? 'AI' : 'PLAYER 2';
+  PlayerLabel get player2Label =>
+      mode == GameMode.pvAi ? PlayerLabel.ai : PlayerLabel.player2;
 
   @override
   bool get isMyTurn =>
       !(mode == GameMode.pvAi && _state.currentPlayer == CellValue.o);
 
   @override
-  String get turnMessage {
-    if (_state.currentPlayer == CellValue.x) return 'Your turn!';
-    if (mode == GameMode.pvAi) return 'AI thinking...';
-    return 'Player 2\'s turn!';
+  TurnMessage get turnMessage {
+    if (_state.currentPlayer == CellValue.x) return TurnMessage.yourTurn;
+    if (mode == GameMode.pvAi) return TurnMessage.aiThinking;
+    return TurnMessage.player2Turn;
   }
 
   /// [col] is 0–6. Drops the current player's piece into that column.
@@ -73,15 +90,23 @@ class ConnectFourController extends ConnectFourBaseController {
       Future.delayed(const Duration(milliseconds: 400), SoundService.instance.playWin);
     }
 
-    if (status == GameStatus.playing && !isMyTurn) {
-      Timer(const Duration(milliseconds: 700), _doAiMove);
-    }
+    _scheduleAiMoveIfNeeded();
   }
 
-  void _doAiMove() {
-    if (_state.status != GameStatus.playing) return;
-    final col = ConnectFourAI.getBestColumn(_state.board, difficulty);
+  Future<void> _doAiMove() async {
+    if (_state.status != GameStatus.playing || isMyTurn) return;
+    final col = await ConnectFourAI.getBestColumn(_state.board, difficulty);
+    // The game may have been reset or closed while the search was running.
+    if (_disposed || _state.status != GameStatus.playing || isMyTurn) return;
     if (col >= 0) makeMove(col);
+  }
+
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 
   @override
@@ -90,12 +115,13 @@ class ConnectFourController extends ConnectFourBaseController {
     _moveCount = 0;
     _state = GameState(
       board: List.filled(c4Rows * c4Cols, CellValue.empty),
-      currentPlayer: CellValue.x,
+      currentPlayer: _randomStarter(),
       status: GameStatus.playing,
       winLine: null,
       scoreX: _state.scoreX,
       scoreO: _state.scoreO,
     );
     notifyListeners();
+    _scheduleAiMoveIfNeeded();
   }
 }

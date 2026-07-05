@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:firebase_database/firebase_database.dart';
 import '../models/game_model.dart';
 import '../models/user_profile.dart';
@@ -15,12 +16,10 @@ class RemoteGameController extends BaseGameController {
   late final DatabaseReference _roomRef;
   StreamSubscription<DatabaseEvent>? _sub;
 
-  String _player1Name;
-  String _player2Name;
+  String? _player1Name;
+  String? _player2Name;
   String? _player1AvatarSeed;
   String? _player2AvatarSeed;
-  String? _player1CustomImagePath;
-  String? _player2CustomImagePath;
 
   GameState _state = GameState(
     board: List.filled(9, CellValue.empty),
@@ -35,20 +34,14 @@ class RemoteGameController extends BaseGameController {
     required this.myRole,
     UserProfile? myProfile,
     this.onOpponentLeft,
-  })  : _player1Name = myRole == CellValue.x
-            ? (myProfile?.username ?? 'Player 1')
-            : 'Opponent',
-        _player2Name = myRole == CellValue.o
-            ? (myProfile?.username ?? 'Player 2')
-            : 'Opponent',
-        _player1AvatarSeed =
-            myRole == CellValue.x ? myProfile?.avatarSeed : null,
-        _player2AvatarSeed =
-            myRole == CellValue.o ? myProfile?.avatarSeed : null,
-        _player1CustomImagePath =
-            myRole == CellValue.x ? myProfile?.customImagePath : null,
-        _player2CustomImagePath =
-            myRole == CellValue.o ? myProfile?.customImagePath : null {
+  }) {
+    if (myRole == CellValue.x) {
+      _player1Name = myProfile?.username;
+      _player1AvatarSeed = myProfile?.avatarSeed;
+    } else {
+      _player2Name = myProfile?.username;
+      _player2AvatarSeed = myProfile?.avatarSeed;
+    }
     _roomRef = FirebaseDatabase.instance.ref('rooms/$roomCode');
     _listenToRoom();
   }
@@ -57,10 +50,18 @@ class RemoteGameController extends BaseGameController {
   GameState get state => _state;
 
   @override
-  String get player1Label => _player1Name;
+  PlayerLabel get player1Label =>
+      myRole == CellValue.x ? PlayerLabel.player1 : PlayerLabel.opponent;
 
   @override
-  String get player2Label => _player2Name;
+  PlayerLabel get player2Label =>
+      myRole == CellValue.o ? PlayerLabel.player2 : PlayerLabel.opponent;
+
+  @override
+  String? get player1Name => _player1Name;
+
+  @override
+  String? get player2Name => _player2Name;
 
   @override
   String? get player1AvatarSeed => _player1AvatarSeed;
@@ -69,19 +70,15 @@ class RemoteGameController extends BaseGameController {
   String? get player2AvatarSeed => _player2AvatarSeed;
 
   @override
-  String? get player1CustomImagePath => _player1CustomImagePath;
-
-  @override
-  String? get player2CustomImagePath => _player2CustomImagePath;
-
-  @override
   bool get isMyTurn =>
       _state.currentPlayer == myRole && _state.status == GameStatus.playing;
 
   @override
-  String get turnMessage {
-    if (_state.status != GameStatus.playing) return '';
-    return _state.currentPlayer == myRole ? 'Your turn!' : 'Opponent\'s turn...';
+  TurnMessage get turnMessage {
+    if (_state.status != GameStatus.playing) return TurnMessage.none;
+    return _state.currentPlayer == myRole
+        ? TurnMessage.yourTurn
+        : TurnMessage.opponentTurn;
   }
 
   void _listenToRoom() {
@@ -113,13 +110,11 @@ class RemoteGameController extends BaseGameController {
       final name = p1['username'] as String?;
       if (name != null && name.isNotEmpty) _player1Name = name;
       _player1AvatarSeed = p1['avatarSeed'] as String?;
-      _player1CustomImagePath = p1['customImageUrl'] as String?;
     }
     if (p2 != null) {
       final name = p2['username'] as String?;
       if (name != null && name.isNotEmpty) _player2Name = name;
       _player2AvatarSeed = p2['avatarSeed'] as String?;
-      _player2CustomImagePath = p2['customImageUrl'] as String?;
     }
   }
 
@@ -148,7 +143,7 @@ class RemoteGameController extends BaseGameController {
   void reset() {
     _roomRef.update({
       'board': List.filled(9, CellValue.empty.name),
-      'currentPlayer': CellValue.x.name,
+      'currentPlayer': (Random().nextBool() ? CellValue.x : CellValue.o).name,
       'status': GameStatus.playing.name,
       'winLine': null,
     });

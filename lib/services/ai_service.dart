@@ -21,10 +21,12 @@ class AiService {
   }
 
   static int _minimax(List<CellValue> board) {
+    // Shuffle so ties (e.g. the opening move) don't always pick the same cell.
+    final moves = _available(board)..shuffle();
     int bestScore = -1000;
-    int bestMove = _available(board).first;
+    int bestMove = moves.first;
 
-    for (final move in _available(board)) {
+    for (final move in moves) {
       final b = List<CellValue>.from(board)..[move] = CellValue.o;
       final score = _score(b, 0, false);
       if (score > bestScore) {

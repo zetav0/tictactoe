@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../l10n/gen/app_localizations.dart';
 import '../models/game_model.dart';
 import '../providers/home_provider.dart';
 import '../providers/profile_provider.dart';
@@ -21,6 +22,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final mode = ref.watch(gameModeProvider);
     final difficulty = ref.watch(difficultyProvider);
     final gameType = ref.watch(gameTypeProvider);
@@ -33,116 +35,133 @@ class HomeScreen extends ConsumerWidget {
       body: Container(
         decoration: const BoxDecoration(gradient: AppColors.canvasGradient),
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height
-                    - MediaQuery.of(context).padding.top
-                    - kToolbarHeight
-                    - 80,
-              ),
-              child: IntrinsicHeight(
-                child: Column(
-                  children: [
-                    const Spacer(),
-                    _Logo()
-                        .animate()
-                        .fadeIn(duration: 600.ms)
-                        .slideY(begin: -0.2, curve: Curves.easeOut),
-                    const SizedBox(height: 16),
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 250),
-                      child: Text(
-                        isC4 ? '4 en Raya' : 'Tic Tac Toe',
-                        key: ValueKey(isC4),
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          letterSpacing: -0.5,
-                          shadows: PlayfulTheme.bubbleShadow(),
-                        ),
-                      ),
-                    ).animate().fadeIn(delay: 200.ms),
-                    const SizedBox(height: 6),
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 250),
-                      child: Text(
-                        isC4 ? 'Conecta cuatro en línea.' : 'The classic game of strategy.',
-                        key: ValueKey(isC4),
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 15,
-                          color: Colors.white60,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ).animate().fadeIn(delay: 300.ms),
-                    const SizedBox(height: 24),
-                    _GameTypePicker(
-                      selected: gameType,
-                      onChanged: (gt) =>
-                          ref.read(gameTypeProvider.notifier).state = gt,
-                    ).animate().fadeIn(delay: 380.ms).slideX(begin: -0.1),
-                    const SizedBox(height: 16),
-                    _ModeButton(
-                      label: 'Player vs Player',
-                      icon: Icons.group_rounded,
-                      selected: mode == GameMode.pvp,
-                      onTap: () =>
-                          ref.read(gameModeProvider.notifier).state = GameMode.pvp,
-                    ).animate().fadeIn(delay: 400.ms).slideX(begin: -0.1),
-                    const SizedBox(height: 12),
-                    _ModeButton(
-                      label: 'Player vs AI',
-                      icon: Icons.smart_toy_rounded,
-                      selected: mode == GameMode.pvAi,
-                      onTap: () =>
-                          ref.read(gameModeProvider.notifier).state = GameMode.pvAi,
-                    ).animate().fadeIn(delay: 500.ms).slideX(begin: -0.1),
-                    const SizedBox(height: 12),
-                    _OnlineButton(
-                      enabled: firebaseReady,
-                      onTap: () => Navigator.push(
-                        context,
-                        _slideRoute(MultiplayerScreen(gameType: gameType)),
-                      ),
-                    ).animate().fadeIn(delay: 560.ms).slideX(begin: -0.1),
-                    const SizedBox(height: 16),
-                    if (mode == GameMode.pvAi) ...[
-                      Text(
-                        'AI DIFFICULTY LEVEL',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.5,
-                          color: Colors.white60,
-                        ),
-                      ).animate().fadeIn(delay: 600.ms),
-                      const SizedBox(height: 10),
-                      _DifficultyPicker(
-                        selected: difficulty,
-                        onChanged: (d) =>
-                            ref.read(difficultyProvider.notifier).state = d,
-                      ).animate().fadeIn(delay: 700.ms),
-                      const SizedBox(height: 16),
-                    ],
-                    const Spacer(),
-                    _PlayButton(
-                      onTap: () => Navigator.push(
-                        context,
-                        _slideRoute(
-                          isC4
-                              ? ConnectFourScreen(mode: mode, difficulty: difficulty)
-                              : GameScreen(mode: mode, difficulty: difficulty),
-                        ),
-                      ),
-                    ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.2),
-                    const SizedBox(height: 16),
-                  ],
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Real space under the transparent app bar. When it isn't enough
+              // for the full-size layout, shrink logo/typography/paddings so
+              // everything fits without scrolling (scroll stays as a fallback
+              // for extremely small screens).
+              final available = constraints.maxHeight - kToolbarHeight;
+              final compact = available < 740;
+              return SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(24, kToolbarHeight, 24, 0),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: available),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        const Spacer(),
+                        _Logo(size: compact ? 84 : 120)
+                            .animate()
+                            .fadeIn(duration: 600.ms)
+                            .slideY(begin: -0.2, curve: Curves.easeOut),
+                        SizedBox(height: compact ? 10 : 16),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 250),
+                          child: Text(
+                            isC4 ? l10n.gameConnectFour : l10n.gameTicTacToe,
+                            key: ValueKey(isC4),
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: compact ? 28 : 36,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              letterSpacing: -0.5,
+                              shadows: PlayfulTheme.bubbleShadow(),
+                            ),
+                          ),
+                        ).animate().fadeIn(delay: 200.ms),
+                        SizedBox(height: compact ? 4 : 6),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 250),
+                          child: Text(
+                            isC4 ? l10n.c4Tagline : l10n.tttTagline,
+                            key: ValueKey(isC4),
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: compact ? 13 : 15,
+                              color: Colors.white60,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ).animate().fadeIn(delay: 300.ms),
+                        SizedBox(height: compact ? 14 : 24),
+                        _GameTypePicker(
+                          selected: gameType,
+                          onChanged: (gt) =>
+                              ref.read(gameTypeProvider.notifier).state = gt,
+                        ).animate().fadeIn(delay: 380.ms).slideX(begin: -0.1),
+                        SizedBox(height: compact ? 10 : 16),
+                        _ModeButton(
+                          compact: compact,
+                          label: l10n.playerVsPlayer,
+                          icon: Icons.group_rounded,
+                          selected: mode == GameMode.pvp,
+                          onTap: () =>
+                              ref.read(gameModeProvider.notifier).state =
+                                  GameMode.pvp,
+                        ).animate().fadeIn(delay: 400.ms).slideX(begin: -0.1),
+                        SizedBox(height: compact ? 8 : 12),
+                        _ModeButton(
+                          compact: compact,
+                          label: l10n.playerVsAi,
+                          icon: Icons.smart_toy_rounded,
+                          selected: mode == GameMode.pvAi,
+                          onTap: () =>
+                              ref.read(gameModeProvider.notifier).state =
+                                  GameMode.pvAi,
+                        ).animate().fadeIn(delay: 500.ms).slideX(begin: -0.1),
+                        SizedBox(height: compact ? 8 : 12),
+                        _OnlineButton(
+                          compact: compact,
+                          enabled: firebaseReady,
+                          onTap: () => Navigator.push(
+                            context,
+                            _slideRoute(MultiplayerScreen(gameType: gameType)),
+                          ),
+                        ).animate().fadeIn(delay: 560.ms).slideX(begin: -0.1),
+                        SizedBox(height: compact ? 10 : 16),
+                        if (mode == GameMode.pvAi) ...[
+                          Text(
+                            l10n.aiDifficultyLevel,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.5,
+                              color: Colors.white60,
+                            ),
+                          ).animate().fadeIn(delay: 600.ms),
+                          SizedBox(height: compact ? 6 : 10),
+                          _DifficultyPicker(
+                            selected: difficulty,
+                            onChanged: (d) =>
+                                ref.read(difficultyProvider.notifier).state = d,
+                          ).animate().fadeIn(delay: 700.ms),
+                          SizedBox(height: compact ? 10 : 16),
+                        ],
+                        const Spacer(),
+                        _PlayButton(
+                          compact: compact,
+                          onTap: () => Navigator.push(
+                            context,
+                            _slideRoute(
+                              isC4
+                                  ? ConnectFourScreen(
+                                      mode: mode,
+                                      difficulty: difficulty,
+                                    )
+                                  : GameScreen(
+                                      mode: mode,
+                                      difficulty: difficulty,
+                                    ),
+                            ),
+                          ),
+                        ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.2),
+                        SizedBox(height: compact ? 10 : 16),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ),
       ),
@@ -156,23 +175,21 @@ class HomeScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       elevation: 0,
       leading: GestureDetector(
-        onTap: () => Navigator.push(
-          context,
-          _slideRoute(const ProfileEditScreen()),
-        ),
+        onTap: () =>
+            Navigator.push(context, _slideRoute(const ProfileEditScreen())),
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: profile == null
               ? const Icon(Icons.settings_rounded, color: Colors.white70)
-              : UserAvatar(
-                  seed: profile.avatarSeed,
-                  imagePath: profile.customImagePath,
-                  size: 36,
-                ),
+              : UserAvatar(seed: profile.avatarSeed, size: 36),
         ),
       ),
       title: Text(
-        profile != null ? 'HI, ${profile.username.toUpperCase()}' : 'GAME BLAST',
+        profile != null
+            ? AppLocalizations.of(
+                context,
+              ).hiUser(profile.username.toUpperCase())
+            : 'GAME BLAST',
         style: GoogleFonts.plusJakartaSans(
           fontSize: 18,
           fontWeight: FontWeight.w800,
@@ -193,11 +210,14 @@ class HomeScreen extends ConsumerWidget {
 }
 
 class _Logo extends StatelessWidget {
+  final double size;
+  const _Logo({this.size = 120});
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 120,
-      height: 120,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(32),
@@ -212,8 +232,8 @@ class _Logo extends StatelessWidget {
       ),
       child: Center(
         child: SizedBox(
-          width: 72,
-          height: 72,
+          width: size * 0.6,
+          height: size * 0.6,
           child: CustomPaint(painter: _LogoPainter()),
         ),
       ),
@@ -226,8 +246,10 @@ PageRouteBuilder<T> _slideRoute<T>(Widget page) => PageRouteBuilder(
   transitionDuration: const Duration(milliseconds: 320),
   reverseTransitionDuration: const Duration(milliseconds: 280),
   transitionsBuilder: (context, animation, secondary, child) => SlideTransition(
-    position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
-        .animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+    position: Tween<Offset>(
+      begin: const Offset(1, 0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
     child: child,
   ),
 );
@@ -247,8 +269,16 @@ class _LogoPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final pad = size.width * 0.12;
-    canvas.drawLine(Offset(pad, pad), Offset(size.width - pad, size.height - pad), xPaint);
-    canvas.drawLine(Offset(size.width - pad, pad), Offset(pad, size.height - pad), xPaint);
+    canvas.drawLine(
+      Offset(pad, pad),
+      Offset(size.width - pad, size.height - pad),
+      xPaint,
+    );
+    canvas.drawLine(
+      Offset(size.width - pad, pad),
+      Offset(pad, size.height - pad),
+      xPaint,
+    );
     canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
       size.width * 0.32,
@@ -265,12 +295,14 @@ class _ModeButton extends StatelessWidget {
   final IconData icon;
   final bool selected;
   final VoidCallback onTap;
+  final bool compact;
 
   const _ModeButton({
     required this.label,
     required this.icon,
     required this.selected,
     required this.onTap,
+    this.compact = false,
   });
 
   @override
@@ -280,7 +312,10 @@ class _ModeButton extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+        padding: EdgeInsets.symmetric(
+          vertical: compact ? 13 : 18,
+          horizontal: 20,
+        ),
         decoration: BoxDecoration(
           color: selected
               ? Colors.white.withValues(alpha: 0.22)
@@ -293,7 +328,10 @@ class _ModeButton extends StatelessWidget {
             width: selected ? 2 : 1,
           ),
           boxShadow: selected
-              ? PlayfulTheme.ambientShadow(color: AppColors.primaryContainer, opacity: 0.4)
+              ? PlayfulTheme.ambientShadow(
+                  color: AppColors.primaryContainer,
+                  opacity: 0.4,
+                )
               : null,
         ),
         child: Row(
@@ -364,7 +402,9 @@ class _GameTypePicker extends StatelessWidget {
                     ? BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(28),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.4),
+                        ),
                       )
                     : null,
                 child: Row(
@@ -379,7 +419,9 @@ class _GameTypePicker extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      gt == GameType.ticTacToe ? 'Tic Tac Toe' : '4 en Raya',
+                      gt == GameType.ticTacToe
+                          ? AppLocalizations.of(context).gameTicTacToe
+                          : AppLocalizations.of(context).gameConnectFour,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -425,11 +467,23 @@ class _DifficultyPicker extends StatelessWidget {
                     ? BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(28),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.4),
+                        ),
                       )
                     : null,
                 child: Text(
-                  d.name[0].toUpperCase() + d.name.substring(1),
+                  switch (d) {
+                    AIDifficulty.easy => AppLocalizations.of(
+                      context,
+                    ).difficultyEasy,
+                    AIDifficulty.medium => AppLocalizations.of(
+                      context,
+                    ).difficultyMedium,
+                    AIDifficulty.hard => AppLocalizations.of(
+                      context,
+                    ).difficultyHard,
+                  },
                   textAlign: TextAlign.center,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
@@ -449,7 +503,12 @@ class _DifficultyPicker extends StatelessWidget {
 class _OnlineButton extends StatelessWidget {
   final VoidCallback onTap;
   final bool enabled;
-  const _OnlineButton({required this.onTap, this.enabled = true});
+  final bool compact;
+  const _OnlineButton({
+    required this.onTap,
+    this.enabled = true,
+    this.compact = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -459,11 +518,16 @@ class _OnlineButton extends StatelessWidget {
         opacity: enabled ? 1.0 : 0.45,
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+          padding: EdgeInsets.symmetric(
+            vertical: compact ? 13 : 18,
+            horizontal: 20,
+          ),
           decoration: BoxDecoration(
             color: AppColors.tertiary.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.5)),
+            border: Border.all(
+              color: AppColors.tertiary.withValues(alpha: 0.5),
+            ),
           ),
           child: Row(
             children: [
@@ -474,11 +538,15 @@ class _OnlineButton extends StatelessWidget {
                   color: AppColors.tertiary.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.wifi_rounded, color: AppColors.tertiary, size: 22),
+                child: const Icon(
+                  Icons.wifi_rounded,
+                  color: AppColors.tertiary,
+                  size: 22,
+                ),
               ),
               const SizedBox(width: 14),
               Text(
-                'Online Multiplayer',
+                AppLocalizations.of(context).onlineMultiplayer,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -493,7 +561,7 @@ class _OnlineButton extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  'NEW',
+                  AppLocalizations.of(context).badgeNew,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
@@ -512,8 +580,9 @@ class _OnlineButton extends StatelessWidget {
 
 class _PlayButton extends StatelessWidget {
   final VoidCallback onTap;
+  final bool compact;
 
-  const _PlayButton({required this.onTap});
+  const _PlayButton({required this.onTap, this.compact = false});
 
   @override
   Widget build(BuildContext context) {
@@ -521,7 +590,7 @@ class _PlayButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 20),
+        padding: EdgeInsets.symmetric(vertical: compact ? 15 : 20),
         decoration: BoxDecoration(
           color: AppColors.secondary,
           borderRadius: BorderRadius.circular(24),
@@ -530,10 +599,14 @@ class _PlayButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.play_arrow_rounded, color: AppColors.onSecondary, size: 28),
+            const Icon(
+              Icons.play_arrow_rounded,
+              color: AppColors.onSecondary,
+              size: 28,
+            ),
             const SizedBox(width: 10),
             Text(
-              'PLAY NOW',
+              AppLocalizations.of(context).playNow,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,

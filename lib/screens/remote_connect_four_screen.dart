@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controllers/remote_connect_four_controller.dart';
+import '../l10n/gen/app_localizations.dart';
 import '../models/game_model.dart';
 import '../providers/profile_provider.dart';
 import '../theme/app_colors.dart';
@@ -68,15 +69,17 @@ class _RemoteConnectFourScreenState extends ConsumerState<RemoteConnectFourScree
 
   void _onOpponentLeft() {
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surfaceContainerHigh,
-        title: const Text('Opponent left', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'Your opponent disconnected.',
-          style: TextStyle(color: Colors.white54),
+        title: Text(l10n.opponentLeft,
+            style: const TextStyle(color: Colors.white)),
+        content: Text(
+          l10n.opponentDisconnected,
+          style: const TextStyle(color: Colors.white54),
         ),
         actions: [
           TextButton(
@@ -84,7 +87,7 @@ class _RemoteConnectFourScreenState extends ConsumerState<RemoteConnectFourScree
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
-            child: const Text('Back to Menu'),
+            child: Text(l10n.backToMenu),
           ),
         ],
       ),
@@ -92,23 +95,25 @@ class _RemoteConnectFourScreenState extends ConsumerState<RemoteConnectFourScree
   }
 
   Future<bool> _confirmLeave() async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surfaceContainerHigh,
-        title: const Text('Leave game?', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'The room will be deleted for both players.',
-          style: TextStyle(color: Colors.white54),
+        title: Text(l10n.leaveGame, style: const TextStyle(color: Colors.white)),
+        content: Text(
+          l10n.leaveGameWarning,
+          style: const TextStyle(color: Colors.white54),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Stay'),
+            child: Text(l10n.stay),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Leave', style: TextStyle(color: Colors.redAccent)),
+            child: Text(l10n.leave,
+                style: const TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
@@ -182,7 +187,7 @@ class _RemoteConnectFourScreenState extends ConsumerState<RemoteConnectFourScree
       backgroundColor: AppColors.background,
       elevation: 0,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.primaryFixedDim),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
         onPressed: () async {
           final nav = Navigator.of(context);
           final should = await _confirmLeave();
@@ -190,12 +195,12 @@ class _RemoteConnectFourScreenState extends ConsumerState<RemoteConnectFourScree
         },
       ),
       title: Text(
-        '4 EN RAYA — ONLINE',
-        style: GoogleFonts.inter(
-          fontSize: 17,
-          fontWeight: FontWeight.w700,
+        '${AppLocalizations.of(context).gameConnectFour.toUpperCase()} — ONLINE',
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
           letterSpacing: 1,
-          color: AppColors.primaryFixedDim,
+          color: AppColors.secondary,
         ),
       ),
       centerTitle: true,

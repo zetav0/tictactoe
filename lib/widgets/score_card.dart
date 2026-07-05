@@ -1,9 +1,10 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:multiavatar/multiavatar.dart';
 import '../controllers/base_controller.dart';
+import '../l10n/gen/app_localizations.dart';
+import '../l10n/labels.dart';
 import '../models/game_model.dart';
 import '../theme/app_colors.dart';
 
@@ -18,6 +19,8 @@ class ScoreCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ListenableBuilder(
       listenable: controller,
       builder: (context, _) {
@@ -32,9 +35,9 @@ class ScoreCards extends StatelessWidget {
           child: Row(
             children: [
               _Card(
-                label: controller.player1Label,
+                label: playerDisplayName(
+                    l10n, controller.player1Label, controller.player1Name),
                 avatarSeed: controller.player1AvatarSeed,
-                customImagePath: controller.player1CustomImagePath,
                 score: state.scoreX,
                 active: p1Active,
                 color: AppColors.xColor,
@@ -43,9 +46,9 @@ class ScoreCards extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               _Card(
-                label: controller.player2Label,
+                label: playerDisplayName(
+                    l10n, controller.player2Label, controller.player2Name),
                 avatarSeed: controller.player2AvatarSeed,
-                customImagePath: controller.player2CustomImagePath,
                 score: state.scoreO,
                 active: p2Active,
                 color: AppColors.oColor,
@@ -63,7 +66,6 @@ class ScoreCards extends StatelessWidget {
 class _Card extends StatelessWidget {
   final String label;
   final String? avatarSeed;
-  final String? customImagePath;
   final int score;
   final bool active;
   final Color color;
@@ -76,7 +78,6 @@ class _Card extends StatelessWidget {
     required this.active,
     required this.color,
     this.avatarSeed,
-    this.customImagePath,
     this.avatarBg = AppColors.primaryContainer,
     this.glassStyle = true,
   });
@@ -120,10 +121,9 @@ class _Card extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (avatarSeed != null || customImagePath != null) ...[
+            if (avatarSeed != null) ...[
               _Avatar(
-                seed: avatarSeed ?? '',
-                imagePath: customImagePath,
+                seed: avatarSeed!,
                 active: active,
                 color: color,
                 bg: glassStyle ? null : avatarBg,
@@ -135,7 +135,7 @@ class _Card extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.plusJakartaSans(
-                fontSize: (avatarSeed != null || customImagePath != null) ? 10 : 11,
+                fontSize: avatarSeed != null ? 10 : 11,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 1.2,
                 color: active ? Colors.white : Colors.white54,
@@ -169,7 +169,6 @@ class _Card extends StatelessWidget {
 
 class _Avatar extends StatelessWidget {
   final String seed;
-  final String? imagePath;
   final bool active;
   final Color color;
   /// If non-null, fills the circle with this solid background color (dark-style cards).
@@ -179,7 +178,6 @@ class _Avatar extends StatelessWidget {
     required this.seed,
     required this.active,
     required this.color,
-    this.imagePath,
     this.bg,
   });
 
@@ -201,29 +199,7 @@ class _Avatar extends StatelessWidget {
             : null,
       ),
       clipBehavior: Clip.antiAlias,
-      child: _buildImage(),
+      child: SvgPicture.string(multiavatar(seed), fit: BoxFit.cover),
     );
   }
-
-  Widget _buildImage() {
-    if (imagePath != null) {
-      if (imagePath!.startsWith('https://')) {
-        return Image.network(imagePath!, fit: BoxFit.cover,
-            errorBuilder: (_, e, st) => _svgFallback());
-      }
-      if (imagePath!.startsWith('data:')) {
-        try {
-          final base64Str = imagePath!.substring(imagePath!.indexOf(',') + 1);
-          final bytes = base64Decode(base64Str);
-          return Image.memory(bytes, fit: BoxFit.cover,
-              errorBuilder: (_, e, st) => _svgFallback());
-        } catch (_) {
-          return _svgFallback();
-        }
-      }
-    }
-    return _svgFallback();
-  }
-
-  Widget _svgFallback() => SvgPicture.string(multiavatar(seed), fit: BoxFit.cover);
 }

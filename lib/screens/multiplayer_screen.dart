@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../l10n/gen/app_localizations.dart';
 import '../models/game_model.dart';
 import '../providers/profile_provider.dart';
 import '../services/room_service.dart';
 import '../theme/app_colors.dart';
+import '../theme/playful_theme.dart';
 import '../widgets/tappable.dart';
 import 'remote_connect_four_screen.dart';
 import 'remote_game_screen.dart';
@@ -41,7 +43,9 @@ class _MultiplayerScreenState extends ConsumerState<MultiplayerScreen> {
       if (!mounted) return;
       Navigator.push(
         context,
-        _slideRoute(WaitingRoomScreen(roomCode: code, gameType: widget.gameType)),
+        _slideRoute(
+          WaitingRoomScreen(roomCode: code, gameType: widget.gameType),
+        ),
       );
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -49,9 +53,10 @@ class _MultiplayerScreenState extends ConsumerState<MultiplayerScreen> {
   }
 
   Future<void> _joinRoom() async {
+    final l10n = AppLocalizations.of(context);
     final code = _codeController.text.trim().toUpperCase();
     if (code.length != 6) {
-      _showError('Please enter a valid 6-character code.');
+      _showError(l10n.invalidCode);
       return;
     }
 
@@ -63,7 +68,9 @@ class _MultiplayerScreenState extends ConsumerState<MultiplayerScreen> {
       switch (result) {
         case JoinResult.ok:
           if (roomGameType != widget.gameType) {
-            final roomName = roomGameType == GameType.connectFour ? '4 en Raya' : 'Tic Tac Toe';
+            final roomName = roomGameType == GameType.connectFour
+                ? l10n.gameConnectFour
+                : l10n.gameTicTacToe;
             _showGameTypeMismatch(code, roomName);
             // Firebase is NOT updated — host stays in the waiting room.
           } else {
@@ -75,9 +82,9 @@ class _MultiplayerScreenState extends ConsumerState<MultiplayerScreen> {
             Navigator.pushReplacement(context, _slideRoute(screen));
           }
         case JoinResult.notFound:
-          _showError('Room "$code" not found. Check the code and try again.');
+          _showError(l10n.roomNotFound(code));
         case JoinResult.roomFull:
-          _showError('Room "$code" is already full.');
+          _showError(l10n.roomFull(code));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -87,7 +94,13 @@ class _MultiplayerScreenState extends ConsumerState<MultiplayerScreen> {
   void _showError(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+        content: Text(
+          msg,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         backgroundColor: Colors.red.shade800,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 4),
@@ -97,7 +110,10 @@ class _MultiplayerScreenState extends ConsumerState<MultiplayerScreen> {
   }
 
   void _showGameTypeMismatch(String code, String roomName) {
-    final selected = widget.gameType == GameType.connectFour ? '4 en Raya' : 'Tic Tac Toe';
+    final l10n = AppLocalizations.of(context);
+    final selected = widget.gameType == GameType.connectFour
+        ? l10n.gameConnectFour
+        : l10n.gameTicTacToe;
     showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
@@ -105,19 +121,29 @@ class _MultiplayerScreenState extends ConsumerState<MultiplayerScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Icon(Icons.warning_rounded, color: Colors.orangeAccent, size: 24),
+            const Icon(
+              Icons.warning_rounded,
+              color: Colors.orangeAccent,
+              size: 24,
+            ),
             const SizedBox(width: 10),
-            const Text('Wrong game mode', style: TextStyle(color: Colors.white, fontSize: 17)),
+            Text(
+              l10n.wrongGameMode,
+              style: const TextStyle(color: Colors.white, fontSize: 17),
+            ),
           ],
         ),
         content: Text(
-          'Room "$code" is a $roomName game, but you have $selected selected.\n\nGo back to the home screen and select $roomName to join this room.',
+          l10n.wrongGameModeContent(code, roomName, selected),
           style: const TextStyle(color: Colors.white70, height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Got it', style: TextStyle(color: Colors.orangeAccent)),
+            child: Text(
+              l10n.gotIt,
+              style: const TextStyle(color: Colors.orangeAccent),
+            ),
           ),
         ],
       ),
@@ -126,122 +152,132 @@ class _MultiplayerScreenState extends ConsumerState<MultiplayerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.canvasGradientTop,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.primaryFixedDim),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'ONLINE MULTIPLAYER',
-          style: GoogleFonts.inter(
+          l10n.onlineMultiplayer.toUpperCase(),
+          style: GoogleFonts.plusJakartaSans(
             fontSize: 16,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
             letterSpacing: 1,
-            color: AppColors.primaryFixedDim,
+            color: Colors.white,
           ),
         ),
         centerTitle: true,
       ),
-      body: _loading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primaryFixedDim),
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 24),
-                  // Create Room Section
-                  _Section(
-                    icon: Icons.add_circle_outline_rounded,
-                    title: 'Create a Room',
-                    subtitle: 'Start a new game and share the code with a friend.',
-                    child: _ActionButton(
-                      label: 'Create Room',
-                      icon: Icons.grid_view_rounded,
-                      onTap: _createRoom,
-                    ),
-                  ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.1),
-                  const SizedBox(height: 32),
-                  // Divider
-                  Row(
-                    children: [
-                      const Expanded(child: Divider(color: Colors.white12)),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'OR',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white24,
-                            letterSpacing: 2,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(gradient: AppColors.canvasGradient),
+        child: _loading
+            ? const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              )
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 24),
+                    // Create Room Section
+                    _Section(
+                      icon: Icons.add_circle_outline_rounded,
+                      title: l10n.createARoom,
+                      subtitle: l10n.createRoomSubtitle,
+                      child: _ActionButton(
+                        label: l10n.createRoom,
+                        icon: Icons.grid_view_rounded,
+                        onTap: _createRoom,
+                      ),
+                    ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.1),
+                    const SizedBox(height: 32),
+                    // Divider
+                    Row(
+                      children: [
+                        const Expanded(child: Divider(color: Colors.white24)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            l10n.orDivider,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white60,
+                              letterSpacing: 2,
+                            ),
                           ),
                         ),
-                      ),
-                      const Expanded(child: Divider(color: Colors.white12)),
-                    ],
-                  ).animate().fadeIn(delay: 200.ms),
-                  const SizedBox(height: 32),
-                  // Join Room Section
-                  _Section(
-                    icon: Icons.login_rounded,
-                    title: 'Join a Room',
-                    subtitle: 'Enter the 6-character code your opponent shared.',
-                    child: Column(
-                      children: [
-                        TextField(
-                          controller: _codeController,
-                          textCapitalization: TextCapitalization.characters,
-                          maxLength: 6,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 8,
-                            color: AppColors.primaryFixedDim,
-                          ),
-                          decoration: InputDecoration(
-                            counterText: '',
-                            hintText: '· · · · · ·',
-                            hintStyle: GoogleFonts.inter(
+                        const Expanded(child: Divider(color: Colors.white24)),
+                      ],
+                    ).animate().fadeIn(delay: 200.ms),
+                    const SizedBox(height: 32),
+                    // Join Room Section
+                    _Section(
+                      icon: Icons.login_rounded,
+                      title: l10n.joinARoom,
+                      subtitle: l10n.joinRoomSubtitle,
+                      child: Column(
+                        children: [
+                          TextField(
+                            controller: _codeController,
+                            textCapitalization: TextCapitalization.characters,
+                            maxLength: 6,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 28,
+                              fontWeight: FontWeight.w800,
                               letterSpacing: 8,
-                              color: Colors.white24,
+                              color: Colors.white,
                             ),
-                            filled: true,
-                            fillColor: AppColors.surfaceContainerHigh,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide.none,
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(
-                                color: AppColors.primaryFixedDim.withAlpha(120),
+                            decoration: InputDecoration(
+                              counterText: '',
+                              hintText: '· · · · · ·',
+                              hintStyle: GoogleFonts.plusJakartaSans(
+                                fontSize: 28,
+                                letterSpacing: 8,
+                                color: Colors.white38,
+                              ),
+                              filled: true,
+                              fillColor: Colors.white.withValues(alpha: 0.12),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  color: Colors.white.withValues(alpha: 0.6),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        _ActionButton(
-                          label: 'Join Room',
-                          icon: Icons.play_arrow_rounded,
-                          onTap: _joinRoom,
-                          color: AppColors.tertiary,
-                        ),
-                      ],
-                    ),
-                  ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1),
-                ],
+                          const SizedBox(height: 16),
+                          _ActionButton(
+                            label: l10n.joinRoom,
+                            icon: Icons.play_arrow_rounded,
+                            onTap: _joinRoom,
+                            color: AppColors.tertiary,
+                            textColor: AppColors.onTertiary,
+                            lipColor: AppColors.tertiaryContainer,
+                          ),
+                        ],
+                      ),
+                    ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1),
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 }
@@ -264,20 +300,20 @@ class _Section extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainer,
+        color: Colors.white.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.outlineVariant.withAlpha(50)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, color: AppColors.primaryFixedDim, size: 20),
+              Icon(icon, color: AppColors.secondary, size: 20),
               const SizedBox(width: 10),
               Text(
                 title,
-                style: GoogleFonts.inter(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -288,7 +324,10 @@ class _Section extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             subtitle,
-            style: GoogleFonts.inter(fontSize: 13, color: Colors.white38),
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 13,
+              color: Colors.white60,
+            ),
           ),
           const SizedBox(height: 20),
           child,
@@ -303,12 +342,16 @@ class _ActionButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final Color color;
+  final Color textColor;
+  final Color lipColor;
 
   const _ActionButton({
     required this.label,
     required this.icon,
     required this.onTap,
-    this.color = AppColors.primary,
+    this.color = AppColors.secondary,
+    this.textColor = AppColors.onSecondary,
+    this.lipColor = AppColors.secondaryContainer,
   });
 
   @override
@@ -319,22 +362,20 @@ class _ActionButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(color: color.withAlpha(80), blurRadius: 16, offset: const Offset(0, 4)),
-          ],
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: PlayfulTheme.lipShadow(lipColor, depth: 4),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white, size: 20),
+            Icon(icon, color: textColor, size: 20),
             const SizedBox(width: 8),
             Text(
               label,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                color: textColor,
               ),
             ),
           ],
@@ -349,8 +390,10 @@ PageRouteBuilder<T> _slideRoute<T>(Widget page) => PageRouteBuilder(
   transitionDuration: const Duration(milliseconds: 320),
   reverseTransitionDuration: const Duration(milliseconds: 280),
   transitionsBuilder: (context, animation, secondary, child) => SlideTransition(
-    position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
-        .animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+    position: Tween<Offset>(
+      begin: const Offset(1, 0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
     child: child,
   ),
 );

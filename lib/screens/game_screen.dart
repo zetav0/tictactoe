@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../controllers/base_controller.dart';
 import '../controllers/game_controller.dart';
 import '../game/tictactoe_game.dart';
+import '../l10n/gen/app_localizations.dart';
+import '../l10n/labels.dart';
 import '../models/game_model.dart';
 import '../theme/app_colors.dart';
 import '../theme/playful_theme.dart';
@@ -55,7 +57,7 @@ class _GameScreenState extends State<GameScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
-      appBar: buildSharedAppBar(() => Navigator.pop(context)),
+      appBar: buildSharedAppBar(context, () => Navigator.pop(context)),
       body: Container(
         decoration: const BoxDecoration(gradient: AppColors.canvasGradient),
         child: SafeArea(
@@ -187,7 +189,7 @@ class _RestartButton extends StatelessWidget {
               const Icon(Icons.refresh_rounded, color: AppColors.onTertiary, size: 22),
               const SizedBox(width: 8),
               Text(
-                'Restart Game',
+                AppLocalizations.of(context).restartGame,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -217,19 +219,22 @@ class _GameOverOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final state = controller.state;
     final (String title, String emoji, Color accentColor) = switch (state.status) {
       GameStatus.xWins => (
-          '${controller.player1Label} Wins!',
+          l10n.playerWins(playerDisplayName(
+              l10n, controller.player1Label, controller.player1Name)),
           '🎉',
           AppColors.xColor,
         ),
       GameStatus.oWins => (
-          '${controller.player2Label} Wins!',
+          l10n.playerWins(playerDisplayName(
+              l10n, controller.player2Label, controller.player2Name)),
           '🎉',
           AppColors.oColor,
         ),
-      GameStatus.draw => ("It's a Draw!", '🤝', Colors.white70),
+      GameStatus.draw => (l10n.itsADraw, '🤝', Colors.white70),
       GameStatus.playing => ('', '', Colors.transparent),
     };
 
@@ -268,7 +273,7 @@ class _GameOverOverlay extends StatelessWidget {
                 ),
                 const SizedBox(height: 28),
                 _OverlayButton(
-                  label: 'Play Again',
+                  label: l10n.playAgain,
                   color: AppColors.secondary,
                   textColor: AppColors.onSecondary,
                   shadowColor: AppColors.secondaryContainer,
@@ -276,7 +281,7 @@ class _GameOverOverlay extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 _OverlayButton(
-                  label: 'Home',
+                  label: l10n.home,
                   color: Colors.white.withValues(alpha: 0.15),
                   textColor: Colors.white,
                   onTap: onHome,
@@ -353,7 +358,8 @@ class _OverlayButtonState extends State<_OverlayButton> {
   }
 }
 
-AppBar buildSharedAppBar(VoidCallback onBack, {String title = 'TIC TAC TOE'}) {
+AppBar buildSharedAppBar(BuildContext context, VoidCallback onBack,
+    {String? title}) {
   return AppBar(
     backgroundColor: Colors.transparent,
     elevation: 0,
@@ -362,7 +368,7 @@ AppBar buildSharedAppBar(VoidCallback onBack, {String title = 'TIC TAC TOE'}) {
       onPressed: onBack,
     ),
     title: Text(
-      title,
+      title ?? AppLocalizations.of(context).gameTicTacToe.toUpperCase(),
       style: GoogleFonts.plusJakartaSans(
         fontSize: 20,
         fontWeight: FontWeight.w800,

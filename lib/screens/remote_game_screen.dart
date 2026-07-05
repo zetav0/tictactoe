@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/remote_game_controller.dart';
 import '../game/tictactoe_game.dart';
+import '../l10n/gen/app_localizations.dart';
 import '../models/game_model.dart';
 import '../providers/profile_provider.dart';
 import '../theme/app_colors.dart';
 import '../widgets/bottom_nav.dart';
-import 'game_screen.dart' show GameBody, buildSharedAppBar; // ignore: unused_import
+import 'game_screen.dart'
+    show GameBody, buildSharedAppBar; // ignore: unused_import
 
 class RemoteGameScreen extends ConsumerStatefulWidget {
   final String roomCode;
@@ -48,15 +50,19 @@ class _RemoteGameScreenState extends ConsumerState<RemoteGameScreen> {
 
   void _onOpponentLeft() {
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surfaceContainerHigh,
-        title: const Text('Opponent left', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'Your opponent disconnected.',
-          style: TextStyle(color: Colors.white54),
+        title: Text(
+          l10n.opponentLeft,
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          l10n.opponentDisconnected,
+          style: const TextStyle(color: Colors.white54),
         ),
         actions: [
           TextButton(
@@ -64,7 +70,7 @@ class _RemoteGameScreenState extends ConsumerState<RemoteGameScreen> {
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
-            child: const Text('Back to Menu'),
+            child: Text(l10n.backToMenu),
           ),
         ],
       ),
@@ -72,23 +78,30 @@ class _RemoteGameScreenState extends ConsumerState<RemoteGameScreen> {
   }
 
   Future<bool> _onWillPop() async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surfaceContainerHigh,
-        title: const Text('Leave game?', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'The room will be deleted for both players.',
-          style: TextStyle(color: Colors.white54),
+        title: Text(
+          l10n.leaveGame,
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          l10n.leaveGameWarning,
+          style: const TextStyle(color: Colors.white54),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Stay'),
+            child: Text(l10n.stay),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Leave', style: TextStyle(color: Colors.redAccent)),
+            child: Text(
+              l10n.leave,
+              style: const TextStyle(color: Colors.redAccent),
+            ),
           ),
         ],
       ),
@@ -120,12 +133,22 @@ class _RemoteGameScreenState extends ConsumerState<RemoteGameScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: buildSharedAppBar(() async {
+        extendBodyBehindAppBar: true,
+        backgroundColor: Colors.transparent,
+        appBar: buildSharedAppBar(context, () async {
           final should = await _onWillPop();
           if (should && context.mounted) Navigator.pop(context);
         }),
-        body: GameBody(controller: _controller, game: _game, onTap: _handleTap),
+        body: Container(
+          decoration: const BoxDecoration(gradient: AppColors.canvasGradient),
+          child: SafeArea(
+            child: GameBody(
+              controller: _controller,
+              game: _game,
+              onTap: _handleTap,
+            ),
+          ),
+        ),
         bottomNavigationBar: const AppBottomNav(),
       ),
     );

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import '../models/game_model.dart';
 import '../services/ai_service.dart';
 import '../services/sound_service.dart';
@@ -13,30 +14,42 @@ class GameController extends BaseGameController {
   GameController({required this.mode, required this.difficulty})
       : _state = GameState(
           board: List.filled(9, CellValue.empty),
-          currentPlayer: CellValue.x,
+          currentPlayer: _randomStarter(),
           status: GameStatus.playing,
           scoreX: 0,
           scoreO: 0,
-        );
+        ) {
+    _scheduleAiMoveIfNeeded();
+  }
+
+  static CellValue _randomStarter() =>
+      Random().nextBool() ? CellValue.x : CellValue.o;
+
+  void _scheduleAiMoveIfNeeded() {
+    if (_state.status == GameStatus.playing && !isMyTurn) {
+      Timer(const Duration(milliseconds: 600), _doAiMove);
+    }
+  }
 
   @override
   GameState get state => _state;
 
   @override
-  String get player1Label => 'PLAYER 1';
+  PlayerLabel get player1Label => PlayerLabel.player1;
 
   @override
-  String get player2Label => mode == GameMode.pvAi ? 'AI' : 'PLAYER 2';
+  PlayerLabel get player2Label =>
+      mode == GameMode.pvAi ? PlayerLabel.ai : PlayerLabel.player2;
 
   @override
   bool get isMyTurn =>
       !(mode == GameMode.pvAi && _state.currentPlayer == CellValue.o);
 
   @override
-  String get turnMessage {
-    if (_state.currentPlayer == CellValue.x) return 'Your turn!';
-    if (mode == GameMode.pvAi) return 'AI thinking...';
-    return 'Player 2\'s turn!';
+  TurnMessage get turnMessage {
+    if (_state.currentPlayer == CellValue.x) return TurnMessage.yourTurn;
+    if (mode == GameMode.pvAi) return TurnMessage.aiThinking;
+    return TurnMessage.player2Turn;
   }
 
   @override
@@ -65,13 +78,12 @@ class GameController extends BaseGameController {
       Future.delayed(const Duration(milliseconds: 400), SoundService.instance.playWin);
     }
 
-    if (status == GameStatus.playing && !isMyTurn) {
-      Timer(const Duration(milliseconds: 600), _doAiMove);
-    }
+    _scheduleAiMoveIfNeeded();
   }
 
   void _doAiMove() {
-    if (_state.status != GameStatus.playing) return;
+    // isMyTurn guards against a reset landing between the trigger and now.
+    if (_state.status != GameStatus.playing || isMyTurn) return;
     final move = AiService.getBestMove(_state.board, difficulty);
     if (move >= 0) makeMove(move);
   }
@@ -80,12 +92,13 @@ class GameController extends BaseGameController {
   void reset() {
     _state = GameState(
       board: List.filled(9, CellValue.empty),
-      currentPlayer: CellValue.x,
+      currentPlayer: _randomStarter(),
       status: GameStatus.playing,
       winLine: null,
       scoreX: _state.scoreX,
       scoreO: _state.scoreO,
     );
     notifyListeners();
+    _scheduleAiMoveIfNeeded();
   }
 }

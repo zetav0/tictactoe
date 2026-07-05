@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controllers/base_controller.dart';
+import '../l10n/gen/app_localizations.dart';
+import '../l10n/labels.dart';
 import '../models/game_model.dart';
 import '../theme/app_colors.dart';
 
@@ -12,16 +14,26 @@ class TurnIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ListenableBuilder(
       listenable: controller,
       builder: (context, _) {
         final state = controller.state;
 
         final (String text, Color color, IconData icon) = switch (state.status) {
-          GameStatus.xWins => ('Player 1 wins! 🎉', AppColors.xColor, Icons.emoji_events),
-          GameStatus.oWins => ('${controller.player2Label} wins! 🎉', AppColors.oColor, Icons.emoji_events),
-          GameStatus.draw => ("It's a draw!", Colors.white54, Icons.handshake),
-          GameStatus.playing => _playingLabel(state, controller),
+          GameStatus.xWins => (
+              '${l10n.playerWins(playerDisplayName(l10n, controller.player1Label, controller.player1Name))} 🎉',
+              AppColors.xColor,
+              Icons.emoji_events,
+            ),
+          GameStatus.oWins => (
+              '${l10n.playerWins(playerDisplayName(l10n, controller.player2Label, controller.player2Name))} 🎉',
+              AppColors.oColor,
+              Icons.emoji_events,
+            ),
+          GameStatus.draw => (l10n.itsADraw, Colors.white54, Icons.handshake),
+          GameStatus.playing => _playingLabel(l10n, state, controller),
         };
 
         final contentKey = ValueKey('${state.status.index}:${state.currentPlayer.index}');
@@ -80,10 +92,11 @@ class TurnIndicator extends StatelessWidget {
   }
 
   static (String, Color, IconData) _playingLabel(
+    AppLocalizations l10n,
     GameState state,
     BaseGameController controller,
   ) {
-    final msg = controller.turnMessage;
+    final msg = turnMessageText(l10n, controller.turnMessage);
     if (state.currentPlayer == CellValue.x) {
       return (msg, AppColors.xColor, Icons.sports_esports);
     }

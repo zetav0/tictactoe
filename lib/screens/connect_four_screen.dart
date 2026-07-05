@@ -5,6 +5,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controllers/base_controller.dart';
 import '../controllers/connect_four_controller.dart';
+import '../l10n/gen/app_localizations.dart';
+import '../l10n/labels.dart';
 import '../models/game_model.dart';
 import '../theme/app_colors.dart';
 import '../theme/playful_theme.dart';
@@ -130,7 +132,7 @@ class _ConnectFourScreenState extends State<ConnectFourScreen> {
         onPressed: () => Navigator.pop(context),
       ),
       title: Text(
-        '4 EN RAYA',
+        AppLocalizations.of(context).gameConnectFour.toUpperCase(),
         style: GoogleFonts.plusJakartaSans(
           fontSize: 20,
           fontWeight: FontWeight.w800,
@@ -201,7 +203,7 @@ class _RestartButton extends StatelessWidget {
               const Icon(Icons.refresh_rounded, color: AppColors.onTertiary, size: 22),
               const SizedBox(width: 8),
               Text(
-                'Restart Game',
+                AppLocalizations.of(context).restartGame,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -232,19 +234,22 @@ class C4GameOverOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final state = controller.state;
     final (String title, String emoji, Color accentColor) = switch (state.status) {
       GameStatus.xWins => (
-          '${controller.player1Label} Wins!',
+          l10n.playerWins(playerDisplayName(
+              l10n, controller.player1Label, controller.player1Name)),
           '🎉',
           AppColors.xColor,
         ),
       GameStatus.oWins => (
-          '${controller.player2Label} Wins!',
+          l10n.playerWins(playerDisplayName(
+              l10n, controller.player2Label, controller.player2Name)),
           '🎉',
           AppColors.oColor,
         ),
-      GameStatus.draw => ("It's a Draw!", '🤝', Colors.white70),
+      GameStatus.draw => (l10n.itsADraw, '🤝', Colors.white70),
       GameStatus.playing => ('', '', Colors.transparent),
     };
 
@@ -283,7 +288,7 @@ class C4GameOverOverlay extends StatelessWidget {
                 ),
                 const SizedBox(height: 28),
                 _OverlayButton(
-                  label: 'Play Again',
+                  label: l10n.playAgain,
                   color: AppColors.secondary,
                   textColor: AppColors.onSecondary,
                   shadowColor: AppColors.secondaryContainer,
@@ -291,9 +296,9 @@ class C4GameOverOverlay extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 _OverlayButton(
-                  label: 'Home',
-                  color: AppColors.surfaceContainerHigh,
-                  textColor: Colors.white60,
+                  label: l10n.home,
+                  color: Colors.white.withValues(alpha: 0.15),
+                  textColor: Colors.white,
                   onTap: onHome,
                 ),
               ],

@@ -5,71 +5,60 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-# Run the app (hot reload available with 'r' in terminal)
-flutter run
+flutter run                  # Android/iOS device or emulator (primary target)
+flutter run -d chrome        # Web — the desktop test target (Firebase fully works here)
 
-# Run on a specific device (mobile-first project; Chrome is the desktop test target)
-flutter run -d chrome        # Web
+flutter test                                    # All tests
+flutter test test/connect_four_ai_test.dart     # Single test file
 
-# Tests
-flutter test                          # All tests
-flutter test test/widget_test.dart    # Single test file
-
-# Analysis and linting
 flutter analyze
-
-# Install/update dependencies
 flutter pub get
-flutter pub upgrade
 ```
+
+Android, iOS and Web are the only enabled platforms — the desktop folders (`linux/`, `macos/`, `windows/`) were deliberately removed; don't re-add them. The app is portrait-only.
+
+## What this app is
+
+"Game Blast": two games — Tic Tac Toe and Connect Four ("4 en Raya") — each playable as local PvP, vs AI (easy/medium/hard), or online multiplayer over Firebase Realtime Database using 6-character room codes. Users have a profile (username + a preset multiavatar; custom photo upload was deliberately removed to avoid user-generated content) persisted with shared_preferences; app entry (`lib/app.dart`) routes to `ProfileSetupScreen` until a profile exists.
 
 ## Architecture
 
-This is a Flutter Tic Tac Toe game. The current `lib/main.dart` is still the default counter demo — the game is being built from scratch. The intended structure is defined in `.stich/estructura_del_proyecto_flutter.md`:
+The load-bearing abstraction is `BaseGameController` (`lib/controllers/base_controller.dart`), a `ChangeNotifier` exposing state, player labels and turn info, with four implementations:
 
-```
-lib/
-  models/       # Game state and board models
-  screens/      # HomeScreen, GameScreen
-  widgets/      # Board, Cell, ScoreCard, GameSymbol
-  services/     # AIService (Minimax), local persistence (shared_preferences)
-  providers/    # Riverpod state management
-```
+- `GameController` — local Tic Tac Toe (PvP or vs `AiService`)
+- `RemoteGameController` — online Tic Tac Toe over RTDB
+- `ConnectFourController` / `RemoteConnectFourController` — the same pair for Connect Four, via `ConnectFourBaseController` which adds `lastPlacedIndex`/`moveCount` for drop animations
 
-**State management:** Riverpod (`flutter_riverpod`). All game state flows through providers, not `setState` in screen widgets.
+Because of this, the game UI (`GameBody`, `ScoreCards`, `TurnIndicator`, `ConnectFourBoard`) is shared between local and online play. Put new game features behind this abstraction.
 
-**AI service:** `AIService` in `lib/services/ai_service.dart` implements Minimax. Easy difficulty uses random moves; Hard uses full Minimax. The board is represented as `List<String?>` with 9 elements (null = empty, 'X'/'O' = taken).
+- **Board model:** `List<CellValue>` — 9 cells for Tic Tac Toe, 42 (6×7, row-major, row 0 = top) for Connect Four. Pure win/draw logic lives in `lib/utils/`.
+- **Board rendering:** Tic Tac Toe uses Flame (`lib/game/` — board/cell/win-line components drawn on canvas with glow and animations). Connect Four is plain widgets (`lib/widgets/connect_four_board.dart`).
+- **State management:** Riverpod is used only for the profile and home-screen selections (`lib/providers/`). Game state lives in the controllers (`ChangeNotifier` + `ListenableBuilder`), not in Riverpod.
+- **AI (the AI always plays O, the human is X; the starting player is chosen at random for every game and rematch, in all modes — when O starts, the controllers kick off the first AI move from the constructor/reset):**
+  - `AiService` (TTT): minimax — hard is unbeatable, medium randomly alternates minimax/random.
+  - `ConnectFourAI`: easy = random, medium = 1-ply win/block/centre, hard = iterative-deepening negamax with alpha-beta and window-based evaluation, run via `compute()` in an isolate under a time budget (`kIsWeb ? 200 : 450` ms — `compute` falls back to the main thread on web).
+- **Online flow:** `RoomService` — the host creates a room (status `waiting`, host = X) and waits in `WaitingRoomScreen`; the joiner validates the room's `gameType` client-side before `confirmJoin` flips status to `playing`. Each client computes its move locally and writes the full state to `rooms/<CODE>`; the opponent receives it via the `onValue` stream. Leaving or cancelling deletes the room.
+- **Firebase:** initialized in `main.dart` inside try/catch; the global `firebaseReady` gates the Online button. There is **no firebase_auth** — RTDB security rules must allow unauthenticated access.
+- **Sound:** `SoundService` (audioplayers) with the `.wav` assets in `assets/sounds/` (move + win, separate players so they don't cut each other off).
+- **i18n:** English + Spanish via `flutter_localizations`/gen-l10n. Strings live in `lib/l10n/app_en.arb` (template) and `app_es.arb`; code is generated into `lib/l10n/gen/` (`flutter gen-l10n`, also runs automatically on build). Never hardcode user-facing strings: add a key to both ARBs. Controllers must stay locale-free — they expose semantic enums (`PlayerLabel`, `TurnMessage`) that the UI maps to text via `lib/l10n/labels.dart`.
 
-**Animations:** Use the `flutter_animate` package. Reference implementations for piece entry (scale + fadeIn), cell tap feedback, winning cell pulse, and turn indicator shake are in `.stich/c_digo_de_animaciones_para_flutter.md`.
+## Design System — "Playful Edition"
 
-## Design System — "Indigo-Coral Play"
+Defined in `.stich/stitch_advanced_flutter_tic_tac_toe/playful_edition/DESIGN.md`, implemented in `lib/theme/` (`AppColors`, `PlayfulTheme`, `PlayfulBackground`):
 
-Defined in `.stich/indigo_coral_play/DESIGN.md`. Key points:
+- Royal-blue canvas gradient (#1E4DE2 → #002A78) with a subtle white dot grid; dark neutral surfaces elsewhere
+- Font: Plus Jakarta Sans (google_fonts), heavy weights (w700/w800)
+- Player X = light blue (#B4C5FF / indigo glow), Player O = yellow (#FFBA38); wins use the green tertiary
+- 3-D buttons: solid fill + hard bottom "lip" shadow (`PlayfulTheme.lipShadow` and its primary/secondary/tertiary variants)
+- Glassmorphism panels (white ~12% opacity + light border) and hyper-rounded corners: cells 16, cards 24, pill buttons
+- Game-over modal: `BackdropFilter` blur(12) over a glass card, `easeOutBack` entrance
 
-- **Player X = Indigo** (`primary: #4f378a` / `Colors.indigoAccent`), **Player O = Coral** (`Colors.coral`)
-- **Font:** Inter (via `google_fonts`)
-- **Shape language:** Extra-rounded everywhere — cells use `BorderRadius.circular(16)`, buttons use pill/full-round, modals use `BorderRadius.circular(24)`
-- **Winning cells:** pulse animation with `Colors.indigoAccent` glow; winning line animates in using Success Green
-- **Game-over modals:** glassmorphism overlay — `backdrop-filter blur(12px)`, semi-transparent surface container
-- **Board layout:** 3×3 grid with 12px gutters, 20px screen margins, 8px vertical rhythm base unit; board capped at 500px max-width on tablets
+## Testing notes
 
-## Dependencies to Add
+- Widget tests must call `SharedPreferences.setMockInitialValues(...)` before pumping the app — the entry point loads the profile. `app.dart` itself never touches Firebase, so the entry flow needs no Firebase mocks.
+- `test/connect_four_ai_test.dart` builds positions with a gravity-respecting `drop()` helper; keep positions legal (X always has one more piece than O when it is O's turn).
 
-The following packages are planned but not yet in `pubspec.yaml`:
+## Known gaps
 
-```yaml
-flutter_riverpod: ^2.3.6
-shared_preferences: ^2.2.0
-google_fonts: ^5.1.0
-flutter_animate: ^4.2.0
-audioplayers: ^5.2.1
-```
-
-Sound assets go in `assets/sounds/move.mp3` and `assets/sounds/win.mp3`.
-
-## Design References
-
-`.stich/` holds pre-built HTML mockups with screenshots:
-- `.stich/men_principal/` — main menu screen
-- `.stich/tablero_de_juego/` — game board screen
-- `.stich/tic_tac_toe_logo/` — logo
+- Bottom-nav "History"/"Profile" tabs and the leaderboard icon are visual placeholders.
+- Abandoned online rooms are never garbage-collected server-side.

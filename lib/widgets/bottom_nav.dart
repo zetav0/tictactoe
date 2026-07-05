@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../l10n/gen/app_localizations.dart';
 import '../providers/home_provider.dart';
 import '../theme/app_colors.dart';
 
@@ -10,6 +11,7 @@ class AppBottomNav extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(navIndexProvider);
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -35,19 +37,19 @@ class AppBottomNav extends ConsumerWidget {
             children: [
               _NavItem(
                 icon: Icons.grid_view_rounded,
-                label: 'Play',
+                label: l10n.navPlay,
                 active: currentIndex == 0,
                 onTap: () => ref.read(navIndexProvider.notifier).state = 0,
               ),
               _NavItem(
                 icon: Icons.history_rounded,
-                label: 'History',
+                label: l10n.navHistory,
                 active: currentIndex == 1,
                 onTap: () => ref.read(navIndexProvider.notifier).state = 1,
               ),
               _NavItem(
                 icon: Icons.person_rounded,
-                label: 'Profile',
+                label: l10n.navProfile,
                 active: currentIndex == 2,
                 onTap: () => ref.read(navIndexProvider.notifier).state = 2,
               ),
@@ -81,11 +83,11 @@ class _NavItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: active
             ? BoxDecoration(
-                color: AppColors.primaryContainer,
+                color: AppColors.secondary,
                 borderRadius: BorderRadius.circular(32),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primaryContainer.withValues(alpha: 0.4),
+                    color: AppColors.secondary.withValues(alpha: 0.4),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -97,7 +99,7 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: active ? Colors.white : Colors.white38,
+              color: active ? AppColors.onSecondary : Colors.white38,
               size: 22,
             ),
             const SizedBox(height: 2),
@@ -106,7 +108,7 @@ class _NavItem extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                color: active ? Colors.white : Colors.white38,
+                color: active ? AppColors.onSecondary : Colors.white38,
               ),
             ),
           ],

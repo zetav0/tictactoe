@@ -21,7 +21,8 @@ class RoomService {
     final boardSize = gameType == GameType.connectFour ? 42 : 9;
     await _db.child('rooms/$code').set({
       'board': List.filled(boardSize, 'empty'),
-      'currentPlayer': 'x',
+      // Random starter: the host is always X, but either mark may open.
+      'currentPlayer': Random().nextBool() ? 'x' : 'o',
       'status': 'waiting',
       'winLine': null,
       'scoreX': 0,
@@ -32,7 +33,6 @@ class RoomService {
         'player1': {
           'username': profile.username,
           'avatarSeed': profile.avatarSeed,
-          if (profile.shareableImageUrl != null) 'customImageUrl': profile.shareableImageUrl,
         },
     });
     return code;
@@ -61,7 +61,6 @@ class RoomService {
       updates['player2'] = {
         'username': profile.username,
         'avatarSeed': profile.avatarSeed,
-        if (profile.shareableImageUrl != null) 'customImageUrl': profile.shareableImageUrl,
       };
     }
     return _db.child('rooms/${code.toUpperCase()}').update(updates);

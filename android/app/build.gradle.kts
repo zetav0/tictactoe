@@ -17,7 +17,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.tictactoe"
+    namespace = "com.wds.tictactoe"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -36,7 +36,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.tictactoe"
+        applicationId = "com.wds.tictactoe"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
