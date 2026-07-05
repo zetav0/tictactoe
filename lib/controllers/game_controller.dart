@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 import '../models/game_model.dart';
+import '../models/match_record.dart';
 import '../services/ai_service.dart';
+import '../services/history_service.dart';
 import '../services/sound_service.dart';
 import '../utils/game_logic.dart';
 import 'base_controller.dart';
@@ -76,6 +78,17 @@ class GameController extends BaseGameController {
     SoundService.instance.playMove();
     if (status != GameStatus.playing) {
       Future.delayed(const Duration(milliseconds: 400), SoundService.instance.playWin);
+      HistoryService.instance.add(MatchRecord(
+        gameType: GameType.ticTacToe,
+        result: switch (status) {
+          GameStatus.xWins => MatchResult.win,
+          GameStatus.oWins => MatchResult.loss,
+          _ => MatchResult.draw,
+        },
+        online: false,
+        difficulty: mode == GameMode.pvAi ? difficulty : null,
+        playedAt: DateTime.now(),
+      ));
     }
 
     _scheduleAiMoveIfNeeded();

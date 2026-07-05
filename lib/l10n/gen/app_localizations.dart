@@ -491,6 +491,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose Avatar'**
   String get chooseAvatar;
+
+  /// No description provided for @profileSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile saved!'**
+  String get profileSaved;
+
+  /// No description provided for @historyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No matches yet.\nFinished games will show up here.'**
+  String get historyEmpty;
+
+  /// No description provided for @resultWin.
+  ///
+  /// In en, this message translates to:
+  /// **'Victory'**
+  String get resultWin;
+
+  /// No description provided for @resultLoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Defeat'**
+  String get resultLoss;
+
+  /// No description provided for @resultDraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Draw'**
+  String get resultDraw;
+
+  /// No description provided for @wonBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} won'**
+  String wonBy(String name);
+
+  /// No description provided for @vsOpponent.
+  ///
+  /// In en, this message translates to:
+  /// **'vs {name}'**
+  String vsOpponent(String name);
+
+  /// No description provided for @onlineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get onlineLabel;
 }
 
 class _AppLocalizationsDelegate

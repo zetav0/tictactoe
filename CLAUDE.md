@@ -19,7 +19,7 @@ Android, iOS and Web are the only enabled platforms — the desktop folders (`li
 
 ## What this app is
 
-"Game Blast": two games — Tic Tac Toe and Connect Four ("4 en Raya") — each playable as local PvP, vs AI (easy/medium/hard), or online multiplayer over Firebase Realtime Database using 6-character room codes. Users have a profile (username + a preset multiavatar; custom photo upload was deliberately removed to avoid user-generated content) persisted with shared_preferences; app entry (`lib/app.dart`) routes to `ProfileSetupScreen` until a profile exists.
+"Game Blast": two games — Tic Tac Toe and Connect Four ("4 en Raya") — each playable as local PvP, vs AI (easy/medium/hard), or online multiplayer over Firebase Realtime Database using 6-character room codes. Users have a profile (username + a preset multiavatar; custom photo upload was deliberately removed to avoid user-generated content) persisted with shared_preferences; app entry (`lib/app.dart`) routes to `ProfileSetupScreen` until a profile exists, then to `MainShell` — an IndexedStack with the three bottom-nav tabs (Play/History/Profile). Game screens are pushed on top of the shell and deliberately have no bottom nav.
 
 ## Architecture
 
@@ -40,6 +40,7 @@ Because of this, the game UI (`GameBody`, `ScoreCards`, `TurnIndicator`, `Connec
 - **Online flow:** `RoomService` — the host creates a room (status `waiting`, host = X) and waits in `WaitingRoomScreen`; the joiner validates the room's `gameType` client-side before `confirmJoin` flips status to `playing`. Each client computes its move locally and writes the full state to `rooms/<CODE>`; the opponent receives it via the `onValue` stream. Leaving or cancelling deletes the room.
 - **Firebase:** initialized in `main.dart` inside try/catch; the global `firebaseReady` gates the Online button. There is **no firebase_auth** — RTDB security rules must allow unauthenticated access.
 - **Sound:** `SoundService` (audioplayers) with the `.wav` assets in `assets/sounds/` (move + win, separate players so they don't cut each other off).
+- **Match history:** every finished game is recorded from the controllers into `HistoryService` (ChangeNotifier singleton over shared_preferences, newest first, capped at 50) as a `MatchRecord`; `HistoryScreen` renders it live. `MatchRecord.result` is from the local player's perspective (player 1 locally, own role online).
 - **i18n:** English + Spanish via `flutter_localizations`/gen-l10n. Strings live in `lib/l10n/app_en.arb` (template) and `app_es.arb`; code is generated into `lib/l10n/gen/` (`flutter gen-l10n`, also runs automatically on build). Never hardcode user-facing strings: add a key to both ARBs. Controllers must stay locale-free — they expose semantic enums (`PlayerLabel`, `TurnMessage`) that the UI maps to text via `lib/l10n/labels.dart`.
 
 ## Design System — "Playful Edition"
@@ -60,5 +61,5 @@ Defined in `.stich/stitch_advanced_flutter_tic_tac_toe/playful_edition/DESIGN.md
 
 ## Known gaps
 
-- Bottom-nav "History"/"Profile" tabs and the leaderboard icon are visual placeholders.
-- Abandoned online rooms are never garbage-collected server-side.
+- The leaderboard icons in the app bars are visual placeholders.
+- Abandoned online rooms are never garbage-collected server-side (and games abandoned mid-match are not recorded in the history).

@@ -8,7 +8,6 @@ import '../models/game_model.dart';
 import '../providers/profile_provider.dart';
 import '../theme/app_colors.dart';
 import '../utils/connect_four_logic.dart';
-import '../widgets/bottom_nav.dart';
 import '../widgets/connect_four_board.dart';
 import '../widgets/score_card.dart';
 import '../widgets/turn_indicator.dart';
@@ -177,7 +176,6 @@ class _RemoteConnectFourScreenState extends ConsumerState<RemoteConnectFourScree
               ),
           ],
         ),
-        bottomNavigationBar: const AppBottomNav(),
       ),
     );
   }

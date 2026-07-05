@@ -29,7 +29,11 @@ const _kAvatarSeeds = [
 ];
 
 class ProfileEditScreen extends ConsumerStatefulWidget {
-  const ProfileEditScreen({super.key});
+  /// When true the screen lives inside the bottom-nav shell: no back button,
+  /// and saving confirms with a snackbar instead of popping the route.
+  final bool embedded;
+
+  const ProfileEditScreen({super.key, this.embedded = false});
 
   @override
   ConsumerState<ProfileEditScreen> createState() => _ProfileEditScreenState();
@@ -71,7 +75,18 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
             avatarSeed: _selectedSeed,
           ),
         );
-    if (mounted) Navigator.pop(context);
+    if (!mounted) return;
+    if (widget.embedded) {
+      setState(() {
+        _saving = false;
+        _dirty = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).profileSaved)),
+      );
+    } else {
+      Navigator.pop(context);
+    }
   }
 
   void _selectSeed(String seed) {
@@ -107,13 +122,16 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
+        leading: widget.embedded
+            ? null
+            : IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Colors.white,
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
         title: Text(
           l10n.editProfile,
           style: GoogleFonts.plusJakartaSans(

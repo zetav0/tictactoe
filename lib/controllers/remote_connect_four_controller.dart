@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:math';
 import 'package:firebase_database/firebase_database.dart';
 import '../models/game_model.dart';
+import '../models/match_record.dart';
 import '../models/user_profile.dart';
+import '../services/history_service.dart';
 import '../services/room_service.dart';
 import '../services/sound_service.dart';
 import '../utils/connect_four_logic.dart';
@@ -121,9 +123,25 @@ class RemoteConnectFourController extends ConnectFourBaseController {
         if (changed != null) SoundService.instance.playMove();
         if (_state.status != GameStatus.playing && prevStatus == GameStatus.playing) {
           Future.delayed(const Duration(milliseconds: 400), SoundService.instance.playWin);
+          _recordResult();
         }
       } catch (_) {}
     });
+  }
+
+  void _recordResult() {
+    HistoryService.instance.add(MatchRecord(
+      gameType: GameType.connectFour,
+      result: switch (_state.status) {
+        GameStatus.draw => MatchResult.draw,
+        GameStatus.xWins =>
+          myRole == CellValue.x ? MatchResult.win : MatchResult.loss,
+        _ => myRole == CellValue.o ? MatchResult.win : MatchResult.loss,
+      },
+      online: true,
+      opponentName: myRole == CellValue.x ? _player2Name : _player1Name,
+      playedAt: DateTime.now(),
+    ));
   }
 
   void _parsePlayerInfo(Map<String, dynamic> data) {

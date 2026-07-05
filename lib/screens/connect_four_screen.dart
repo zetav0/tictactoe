@@ -11,7 +11,6 @@ import '../models/game_model.dart';
 import '../theme/app_colors.dart';
 import '../theme/playful_theme.dart';
 import '../utils/connect_four_logic.dart';
-import '../widgets/bottom_nav.dart';
 import '../widgets/connect_four_board.dart';
 import '../widgets/score_card.dart';
 import '../widgets/tappable.dart';
@@ -119,7 +118,6 @@ class _ConnectFourScreenState extends State<ConnectFourScreen> {
             ),
         ],
       ),
-      bottomNavigationBar: const AppBottomNav(),
     );
   }
 

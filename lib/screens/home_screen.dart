@@ -8,14 +8,12 @@ import '../providers/home_provider.dart';
 import '../providers/profile_provider.dart';
 import '../theme/app_colors.dart';
 import '../theme/playful_theme.dart';
-import '../widgets/bottom_nav.dart';
 import '../widgets/tappable.dart';
 import '../widgets/user_avatar.dart';
 import '../../main.dart' show firebaseReady;
 import 'connect_four_screen.dart';
 import 'game_screen.dart';
 import 'multiplayer_screen.dart';
-import 'profile_edit_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -165,7 +163,6 @@ class HomeScreen extends ConsumerWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const AppBottomNav(),
     );
   }
 
@@ -175,8 +172,8 @@ class HomeScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       elevation: 0,
       leading: GestureDetector(
-        onTap: () =>
-            Navigator.push(context, _slideRoute(const ProfileEditScreen())),
+        // Jump to the Profile tab of the shell.
+        onTap: () => ref.read(navIndexProvider.notifier).state = 2,
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: profile == null

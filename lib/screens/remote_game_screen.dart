@@ -7,7 +7,6 @@ import '../l10n/gen/app_localizations.dart';
 import '../models/game_model.dart';
 import '../providers/profile_provider.dart';
 import '../theme/app_colors.dart';
-import '../widgets/bottom_nav.dart';
 import 'game_screen.dart'
     show GameBody, buildSharedAppBar; // ignore: unused_import
 
@@ -149,7 +148,6 @@ class _RemoteGameScreenState extends ConsumerState<RemoteGameScreen> {
             ),
           ),
         ),
-        bottomNavigationBar: const AppBottomNav(),
       ),
     );
   }

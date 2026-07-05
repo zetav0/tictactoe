@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'l10n/gen/app_localizations.dart';
 import 'providers/profile_provider.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_shell.dart';
 import 'screens/profile_setup_screen.dart';
 import 'theme/app_colors.dart';
 
@@ -115,7 +115,7 @@ class _AppEntry extends ConsumerWidget {
       ),
       error: (e, s) => const ProfileSetupScreen(),
       data: (profile) =>
-          profile == null ? const ProfileSetupScreen() : const HomeScreen(),
+          profile == null ? const ProfileSetupScreen() : const MainShell(),
     );
   }
 }

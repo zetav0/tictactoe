@@ -12,7 +12,6 @@ import '../l10n/labels.dart';
 import '../models/game_model.dart';
 import '../theme/app_colors.dart';
 import '../theme/playful_theme.dart';
-import '../widgets/bottom_nav.dart';
 import '../widgets/score_card.dart';
 import '../widgets/tappable.dart';
 import '../widgets/turn_indicator.dart';
@@ -64,7 +63,6 @@ class _GameScreenState extends State<GameScreen> {
           child: GameBody(controller: _controller, game: _game, onTap: _handleTap),
         ),
       ),
-      bottomNavigationBar: const AppBottomNav(),
     );
   }
 }

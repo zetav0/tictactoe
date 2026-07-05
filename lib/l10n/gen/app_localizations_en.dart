@@ -218,4 +218,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chooseAvatar => 'Choose Avatar';
+
+  @override
+  String get profileSaved => 'Profile saved!';
+
+  @override
+  String get historyEmpty =>
+      'No matches yet.\nFinished games will show up here.';
+
+  @override
+  String get resultWin => 'Victory';
+
+  @override
+  String get resultLoss => 'Defeat';
+
+  @override
+  String get resultDraw => 'Draw';
+
+  @override
+  String wonBy(String name) {
+    return '$name won';
+  }
+
+  @override
+  String vsOpponent(String name) {
+    return 'vs $name';
+  }
+
+  @override
+  String get onlineLabel => 'Online';
 }

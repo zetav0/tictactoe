@@ -98,5 +98,24 @@
   "tapToChangeAvatar": "Tap to change avatar",
   "username": "USERNAME",
   "saveChanges": "Save Changes",
-  "chooseAvatar": "Choose Avatar"
+  "chooseAvatar": "Choose Avatar",
+  "profileSaved": "Profile saved!",
+
+  "historyEmpty": "No matches yet.\nFinished games will show up here.",
+  "resultWin": "Victory",
+  "resultLoss": "Defeat",
+  "resultDraw": "Draw",
+  "wonBy": "{name} won",
+  "@wonBy": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "vsOpponent": "vs {name}",
+  "@vsOpponent": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "onlineLabel": "Online"
 }

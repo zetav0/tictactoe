@@ -71,5 +71,14 @@
   "tapToChangeAvatar": "Toca para cambiar el avatar",
   "username": "NOMBRE DE USUARIO",
   "saveChanges": "Guardar Cambios",
-  "chooseAvatar": "Elegir Avatar"
+  "chooseAvatar": "Elegir Avatar",
+  "profileSaved": "¡Perfil guardado!",
+
+  "historyEmpty": "Aún no hay partidas.\nLas partidas terminadas aparecerán aquí.",
+  "resultWin": "Victoria",
+  "resultLoss": "Derrota",
+  "resultDraw": "Empate",
+  "wonBy": "Ganó {name}",
+  "vsOpponent": "vs {name}",
+  "onlineLabel": "Online"
 }
