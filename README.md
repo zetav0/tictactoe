@@ -1,43 +1,149 @@
-# Tic Tac Toe & 4 en Raya — Flutter
+# 🎮 Tic Tac Toe & 4 en Raya
 
-Juego de Tic Tac Toe y 4 en Raya con modo local, vs IA y multijugador online en tiempo real via Firebase.
+<p align="center">
 
-## Requisitos
+![Flutter](https://img.shields.io/badge/Flutter-3.12+-02569B?logo=flutter\&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-Realtime%20Database-FFCA28?logo=firebase\&logoColor=black)
+![Riverpod](https://img.shields.io/badge/Riverpod-State%20Management-0175C2)
+![Flame](https://img.shields.io/badge/Flame-Game%20Engine-orange)
+![Platform](https://img.shields.io/badge/Android-Web-Linux-success)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) >= 3.12
-- [Firebase CLI](https://firebase.google.com/docs/cli)
-- [FlutterFire CLI](https://firebase.flutter.dev/docs/cli)
+Una aplicación desarrollada en **Flutter** que reúne los clásicos **Tic Tac Toe (3 en Raya)** y **4 en Raya**, ofreciendo juego local, contra Inteligencia Artificial y multijugador online en tiempo real mediante Firebase.
 
-## Setup inicial
+</p>
 
-### 1. Instalar dependencias
+---
+
+## ✨ Características
+
+* 🎮 Dos juegos clásicos en una sola aplicación.
+* 🤖 IA basada en el algoritmo **Minimax**.
+* 🌐 Multijugador online en tiempo real.
+* 👥 Multijugador local en el mismo dispositivo.
+* 🔥 Salas privadas mediante código.
+* 🎨 Interfaz moderna con animaciones fluidas.
+* 🔊 Efectos de sonido durante la partida.
+* 📱 Compatible con Android, Web y Linux.
+
+---
+
+# 📸 Capturas
+
+<p align="center">
+<img src="https://github.com/user-attachments/assets/1a6386cf-a9f2-403f-9eb0-ba4bf5534e06" width="260">
+<img src="https://github.com/user-attachments/assets/7c2c25dc-038f-48ff-8c0a-c67b3fa8a040" width="260">
+<img src="https://github.com/user-attachments/assets/defa44dc-e83e-47cb-abf8-b135ecb7644d" width="260">
+</p>
+
+---
+
+# 🎥 Demo
+
+> **Próximamente**
+
+Una demostración en GIF mostrando:
+
+* Crear una sala
+* Unirse con un código
+* Jugar online
+* Reiniciar la partida
+
+> Un GIF de 10–15 segundos suele captar más atención que varias capturas estáticas.
+
+---
+
+# 🚀 Tecnologías
+
+| Tecnología                 | Uso                 |
+| -------------------------- | ------------------- |
+| Flutter                    | Framework principal |
+| Riverpod                   | Gestión de estado   |
+| Firebase Realtime Database | Multijugador online |
+| Flame                      | Motor del juego     |
+| flutter_animate            | Animaciones         |
+| google_fonts               | Tipografías         |
+| audioplayers               | Efectos de sonido   |
+
+---
+
+# 🧠 Arquitectura
+
+El proyecto sigue una arquitectura modular para facilitar el mantenimiento.
+
+```
+lib/
+│
+├── controllers/     # Controladores del juego online
+├── models/          # Modelos de datos
+├── providers/       # Estado global (Riverpod)
+├── screens/         # Pantallas
+├── services/        # Firebase e IA
+├── widgets/         # Componentes reutilizables
+└── main.dart
+```
+
+---
+
+# 📋 Requisitos
+
+* Flutter SDK >= 3.12
+* Firebase CLI
+* FlutterFire CLI
+
+---
+
+# ⚙️ Instalación
+
+## Clonar el repositorio
+
+```bash
+git clone https://github.com/TU_USUARIO/TU_REPOSITORIO.git
+
+cd TU_REPOSITORIO
+```
+
+## Instalar dependencias
 
 ```bash
 flutter pub get
 ```
 
-### 2. Configurar Firebase
+---
 
-Los archivos de configuración de Firebase **no están incluidos en el repo** (están en `.gitignore`). Debes generarlos tú mismo:
+# 🔥 Configuración de Firebase
+
+Los archivos de configuración **no están incluidos** en el repositorio.
+
+Instalar FlutterFire CLI:
 
 ```bash
-# Instalar FlutterFire CLI si no lo tienes
 dart pub global activate flutterfire_cli
+```
 
-# Conectar con tu proyecto Firebase (abre el navegador para elegir proyecto)
+Configurar Firebase:
+
+```bash
 flutterfire configure
 ```
 
-Esto genera automáticamente:
-- `lib/firebase_options.dart`
-- `android/app/google-services.json`
-- `ios/Runner/GoogleService-Info.plist`
+Archivos generados:
 
-> Si no tienes un proyecto Firebase, créalo en [console.firebase.google.com](https://console.firebase.google.com) y activa **Realtime Database**.
+```
+lib/firebase_options.dart
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+```
 
-### 3. Reglas de Realtime Database
+Si todavía no tienes un proyecto Firebase, créalo desde:
 
-En Firebase Console → **Realtime Database → Rules**, configura:
+https://console.firebase.google.com
+
+y habilita **Realtime Database**.
+
+---
+
+# 🔐 Reglas de Firebase
 
 ```json
 {
@@ -52,59 +158,173 @@ En Firebase Console → **Realtime Database → Rules**, configura:
 }
 ```
 
-### 4. Correr la app
+> ⚠️ Estas reglas son únicamente para desarrollo.
+
+---
+
+# ▶️ Ejecutar
+
+Dispositivo conectado
 
 ```bash
-flutter run             # dispositivo por defecto
-flutter run -d chrome   # web
-flutter run -d linux    # desktop Linux
+flutter run
 ```
 
-## Build
+Web (Pruebas)
 
 ```bash
-# APK Android (debug keys — solo para pruebas)
-flutter build apk
+flutter run -d chrome
+```
 
-# Web
+---
+
+# 📦 Compilar
+
+Android
+
+```bash
+flutter build apk
+```
+
+Web
+
+```bash
 flutter build web
 ```
 
-## Estructura
+---
 
-```
-lib/
-  models/       # Game state y board models
-  screens/      # HomeScreen, GameScreen, MultiplayerScreen
-  widgets/      # Board, Cell, ScoreCard, GameSymbol
-  services/     # RoomService (Firebase), AIService (Minimax)
-  providers/    # Riverpod state management
-  controllers/  # RemoteGameController
-```
+# 🎮 Modos de juego
 
-## Stack
+## 👥 Local
 
-- **Flutter** + **Riverpod** (estado)
-- **Firebase Realtime Database** (multijugador online)
-- **Flame** (motor de juego Tic Tac Toe)
-- **flutter_animate** + **google_fonts**
-- **audioplayers** (efectos de sonido)
+Dos jugadores utilizan el mismo dispositivo.
 
-## Notas conocidas
+---
 
-### Warning "Built-in Kotlin migration" en Android
+## 🤖 Contra IA
 
-Al correr en Android aparece este aviso en la consola:
+La computadora utiliza **Minimax** para realizar movimientos óptimos.
 
-```
-WARNING: Your app uses the following plugins that apply Kotlin Gradle Plugin (KGP): audioplayers_android
-Future versions of Flutter will fail to build if your app uses plugins that apply KGP.
-```
+---
 
-**No es un error** — el build completa y la app funciona con normalidad. Es un issue del paquete `audioplayers_android` que todavía usa la API antigua de Gradle. En cuanto los autores del plugin publiquen una versión con Built-in Kotlin, desaparecerá al hacer:
+## 🌐 Online
+
+Permite crear una sala privada y compartir un código para jugar en tiempo real.
+
+Características:
+
+* sincronización instantánea
+* reinicio de partida
+* control de turnos
+* detección de ganador
+* actualización automática
+
+---
+
+# 🛣️ Roadmap
+
+## Próximas características
+
+* [ ] Chat dentro de las partidas
+* [ ] Sistema de amigos
+* [ ] Ranking global
+* [ ] Estadísticas de victorias
+* [ ] Login con Google
+* [ ] Login anónimo
+* [ ] Avatares personalizados
+* [ ] Historial de partidas
+* [ ] Matchmaking automático
+* [ ] Soporte para iOS
+* [ ] Tema oscuro
+* [ ] Logros (Achievements)
+* [ ] Sonidos configurables
+* [ ] Animaciones de victoria mejoradas
+
+---
+
+# 🤝 Contribuciones
+
+Las contribuciones son bienvenidas.
+
+Si deseas colaborar:
+
+1. Haz un Fork.
+2. Crea una nueva rama.
 
 ```bash
-flutter pub upgrade
+git checkout -b feature/nueva-funcionalidad
 ```
 
-Referencia: [Flutter – Migrate to Built-in Kotlin](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers)
+3. Realiza tus cambios.
+
+4. Haz commit.
+
+```bash
+git commit -m "feat: agregar nueva funcionalidad"
+```
+
+5. Envía los cambios.
+
+```bash
+git push origin feature/nueva-funcionalidad
+```
+
+6. Abre un Pull Request.
+
+---
+
+# 🐞 Problemas conocidos
+
+## Android
+
+Puede aparecer el siguiente warning:
+
+```text
+WARNING: Your app uses the following plugins that apply Kotlin Gradle Plugin (KGP)
+```
+
+No afecta el funcionamiento de la aplicación.
+
+Se debe al paquete **audioplayers_android**, que aún utiliza una API antigua de Gradle.
+
+---
+
+# 💡 Ideas futuras
+
+* IA con varios niveles de dificultad.
+* Torneos online.
+* Repetición de partidas.
+* Espectadores.
+* Modo sin conexión.
+* Diferentes tamaños de tablero.
+* Notificaciones push.
+* Estadísticas por jugador.
+
+---
+
+# ❤️ Agradecimientos
+
+Gracias a los proyectos open source utilizados:
+
+* Flutter
+* Flame
+* Riverpod
+* Firebase
+* audioplayers
+
+---
+
+# 📄 Licencia
+
+Distribuido bajo la licencia **MIT**.
+
+Puedes modificarlo y distribuirlo respetando los términos de la licencia.
+
+---
+
+<p align="center">
+
+⭐ **Si este proyecto te fue útil, considera darle una estrella al repositorio.**
+
+</p>
