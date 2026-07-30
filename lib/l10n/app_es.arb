@@ -3,8 +3,12 @@
 
   "gameTicTacToe": "Tres en Raya",
   "gameConnectFour": "4 en Raya",
+  "gameBallInHole": "Bola al Hoyo",
   "tttTagline": "El clásico juego de estrategia.",
   "c4Tagline": "Conecta cuatro en línea.",
+  "bihTagline": "Inclina el laberinto y esquiva las trampas.",
+  "bihSinglePlayer": "Un Jugador",
+  "bihModeCardBody": "Lleva la bola hasta el hoyo meta. Inclina el teléfono — o arrastra en la pantalla — y no caigas en las trampas.",
   "hiUser": "HOLA, {name}",
   "playerVsPlayer": "Jugador vs Jugador",
   "playerVsAi": "Jugador vs IA",
@@ -73,6 +77,8 @@
   "saveChanges": "Guardar Cambios",
   "chooseAvatar": "Elegir Avatar",
   "profileSaved": "¡Perfil guardado!",
+  "soundSection": "SONIDO",
+  "backgroundMusic": "Música de fondo",
 
   "historyEmpty": "Aún no hay partidas.\nLas partidas terminadas aparecerán aquí.",
   "resultWin": "Victoria",
@@ -80,5 +86,15 @@
   "resultDraw": "Empate",
   "wonBy": "Ganó {name}",
   "vsOpponent": "vs {name}",
-  "onlineLabel": "Online"
+  "onlineLabel": "Online",
+
+  "chooseLevel": "ELIGE UN NIVEL",
+  "levelN": "Nivel {n}",
+  "bestTime": "Mejor {time}",
+  "levelComplete": "¡Nivel superado!",
+  "allLevelsComplete": "¡Todos los niveles superados!",
+  "newBestTime": "¡NUEVO RÉCORD!",
+  "nextLevel": "Siguiente Nivel",
+  "bihHintTilt": "Inclina el teléfono para mover la bola",
+  "bihHintDrag": "Arrastra en la pantalla para dirigir la bola"
 }

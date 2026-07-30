@@ -3,8 +3,12 @@
 
   "gameTicTacToe": "Tic Tac Toe",
   "gameConnectFour": "Connect Four",
+  "gameBallInHole": "Ball in the Hole",
   "tttTagline": "The classic game of strategy.",
   "c4Tagline": "Connect four in a line.",
+  "bihTagline": "Tilt the maze, dodge the traps.",
+  "bihSinglePlayer": "Single Player",
+  "bihModeCardBody": "Roll the ball into the goal hole. Tilt your phone — or drag on the screen — and stay clear of the trap holes.",
   "hiUser": "HI, {name}",
   "@hiUser": {
     "placeholders": {
@@ -100,6 +104,8 @@
   "saveChanges": "Save Changes",
   "chooseAvatar": "Choose Avatar",
   "profileSaved": "Profile saved!",
+  "soundSection": "SOUND",
+  "backgroundMusic": "Background Music",
 
   "historyEmpty": "No matches yet.\nFinished games will show up here.",
   "resultWin": "Victory",
@@ -117,5 +123,25 @@
       "name": {"type": "String"}
     }
   },
-  "onlineLabel": "Online"
+  "onlineLabel": "Online",
+
+  "chooseLevel": "CHOOSE A LEVEL",
+  "levelN": "Level {n}",
+  "@levelN": {
+    "placeholders": {
+      "n": {"type": "int"}
+    }
+  },
+  "bestTime": "Best {time}",
+  "@bestTime": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "levelComplete": "Level Complete!",
+  "allLevelsComplete": "All levels complete!",
+  "newBestTime": "NEW BEST TIME!",
+  "nextLevel": "Next Level",
+  "bihHintTilt": "Tilt your phone to roll the ball",
+  "bihHintDrag": "Drag on the screen to steer the ball"
 }

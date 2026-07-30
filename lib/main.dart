@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app.dart';
 import 'firebase_options.dart';
+import 'services/sound_service.dart';
 
 /// True when Firebase was successfully initialized on this platform.
 bool firebaseReady = false;
@@ -20,5 +21,7 @@ void main() async {
   }
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  // Fire-and-forget: don't hold the first frame for the music loop.
+  SoundService.instance.init();
   runApp(const ProviderScope(child: TicTacToeApp()));
 }

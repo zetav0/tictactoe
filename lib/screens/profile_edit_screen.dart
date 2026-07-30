@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../l10n/gen/app_localizations.dart';
 import '../models/user_profile.dart';
 import '../providers/profile_provider.dart';
+import '../services/sound_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/playful_theme.dart';
 import '../widgets/user_avatar.dart';
@@ -240,6 +241,63 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                   ),
                 ),
               ).animate().fadeIn(delay: 200.ms),
+
+              const SizedBox(height: 28),
+
+              // ── Sound settings ───────────────────────────────────────────────
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  l10n.soundSection,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.5,
+                    color: Colors.white60,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.music_note_rounded,
+                      color: Colors.white70,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        l10n.backgroundMusic,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: SoundService.instance.musicEnabled,
+                      builder: (context, enabled, _) => Switch(
+                        value: enabled,
+                        activeThumbColor: AppColors.onSecondary,
+                        activeTrackColor: AppColors.secondary,
+                        onChanged: (v) =>
+                            SoundService.instance.setMusicEnabled(v),
+                      ),
+                    ),
+                  ],
+                ),
+              ).animate().fadeIn(delay: 250.ms),
 
               const SizedBox(height: 40),
 

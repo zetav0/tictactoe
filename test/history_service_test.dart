@@ -39,4 +39,29 @@ void main() {
     expect(record!.gameType, GameType.connectFour);
     expect(record.opponentName, 'Nacho');
   });
+
+  test('ball-in-hole records round-trip the level field', () {
+    final record = MatchRecord(
+      gameType: GameType.ballInHole,
+      result: MatchResult.win,
+      online: false,
+      level: 3,
+      playedAt: DateTime.fromMillisecondsSinceEpoch(1000),
+    );
+    final parsed = MatchRecord.tryParse(record.toJson());
+    expect(parsed, isNotNull);
+    expect(parsed!.gameType, GameType.ballInHole);
+    expect(parsed.level, 3);
+
+    // Older records without the field still parse.
+    expect(
+      MatchRecord.tryParse({
+        'gameType': 'ticTacToe',
+        'result': 'win',
+        'online': false,
+        'playedAt': 1000,
+      })?.level,
+      isNull,
+    );
+  });
 }

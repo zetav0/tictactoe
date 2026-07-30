@@ -12,6 +12,7 @@ class MatchRecord {
   final bool online;
   final AIDifficulty? difficulty; // set only for games against the AI
   final String? opponentName; // online opponent's username, when known
+  final int? level; // set only for Ball in the Hole (1-based level number)
   final DateTime playedAt;
 
   const MatchRecord({
@@ -20,6 +21,7 @@ class MatchRecord {
     required this.online,
     this.difficulty,
     this.opponentName,
+    this.level,
     required this.playedAt,
   });
 
@@ -29,6 +31,7 @@ class MatchRecord {
     'online': online,
     if (difficulty != null) 'difficulty': difficulty!.name,
     if (opponentName != null) 'opponentName': opponentName,
+    if (level != null) 'level': level,
     'playedAt': playedAt.millisecondsSinceEpoch,
   };
 
@@ -43,6 +46,7 @@ class MatchRecord {
             ? AIDifficulty.values.byName(map['difficulty'] as String)
             : null,
         opponentName: map['opponentName'] as String?,
+        level: map['level'] as int?,
         playedAt: DateTime.fromMillisecondsSinceEpoch(
           map['playedAt'] as int? ?? 0,
         ),

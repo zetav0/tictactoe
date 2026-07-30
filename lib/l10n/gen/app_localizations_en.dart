@@ -15,10 +15,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameConnectFour => 'Connect Four';
 
   @override
+  String get gameBallInHole => 'Ball in the Hole';
+
+  @override
   String get tttTagline => 'The classic game of strategy.';
 
   @override
   String get c4Tagline => 'Connect four in a line.';
+
+  @override
+  String get bihTagline => 'Tilt the maze, dodge the traps.';
+
+  @override
+  String get bihSinglePlayer => 'Single Player';
+
+  @override
+  String get bihModeCardBody =>
+      'Roll the ball into the goal hole. Tilt your phone — or drag on the screen — and stay clear of the trap holes.';
 
   @override
   String hiUser(String name) {
@@ -223,6 +236,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileSaved => 'Profile saved!';
 
   @override
+  String get soundSection => 'SOUND';
+
+  @override
+  String get backgroundMusic => 'Background Music';
+
+  @override
   String get historyEmpty =>
       'No matches yet.\nFinished games will show up here.';
 
@@ -247,4 +266,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onlineLabel => 'Online';
+
+  @override
+  String get chooseLevel => 'CHOOSE A LEVEL';
+
+  @override
+  String levelN(int n) {
+    return 'Level $n';
+  }
+
+  @override
+  String bestTime(String time) {
+    return 'Best $time';
+  }
+
+  @override
+  String get levelComplete => 'Level Complete!';
+
+  @override
+  String get allLevelsComplete => 'All levels complete!';
+
+  @override
+  String get newBestTime => 'NEW BEST TIME!';
+
+  @override
+  String get nextLevel => 'Next Level';
+
+  @override
+  String get bihHintTilt => 'Tilt your phone to roll the ball';
+
+  @override
+  String get bihHintDrag => 'Drag on the screen to steer the ball';
 }

@@ -5,6 +5,7 @@ import 'l10n/gen/app_localizations.dart';
 import 'providers/profile_provider.dart';
 import 'screens/main_shell.dart';
 import 'screens/profile_setup_screen.dart';
+import 'services/sound_service.dart';
 import 'theme/app_colors.dart';
 
 class TicTacToeApp extends StatelessWidget {
@@ -93,6 +94,13 @@ class TicTacToeApp extends StatelessWidget {
             borderSide: BorderSide.none,
           ),
         ),
+      ),
+      // Browsers block audio until the user interacts with the page, so the
+      // first pointer-down anywhere (re)tries starting the background music.
+      builder: (context, child) => Listener(
+        onPointerDown: (_) => SoundService.instance.ensureMusicStarted(),
+        behavior: HitTestBehavior.translucent,
+        child: child ?? const SizedBox.shrink(),
       ),
       home: const _AppEntry(),
     );

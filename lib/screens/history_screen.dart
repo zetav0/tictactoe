@@ -98,7 +98,9 @@ class _HistoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isLocalPvp = !record.online && record.difficulty == null;
+    final isBallInHole = record.gameType == GameType.ballInHole;
+    final isLocalPvp =
+        !record.online && record.difficulty == null && !isBallInHole;
 
     final (String resultText, Color resultColor) = switch (record.result) {
       MatchResult.draw => (l10n.resultDraw, Colors.white70),
@@ -112,15 +114,18 @@ class _HistoryTile extends StatelessWidget {
             : (l10n.resultLoss, _lossColor),
     };
 
-    final game = record.gameType == GameType.connectFour
-        ? l10n.gameConnectFour
-        : l10n.gameTicTacToe;
+    final game = switch (record.gameType) {
+      GameType.ticTacToe => l10n.gameTicTacToe,
+      GameType.connectFour => l10n.gameConnectFour,
+      GameType.ballInHole => l10n.gameBallInHole,
+    };
     final opponent = record.online
         ? (record.opponentName ?? l10n.labelOpponent)
         : (record.difficulty != null ? l10n.labelAi : l10n.labelPlayer2);
     final details = [
       game,
-      if (!isLocalPvp) l10n.vsOpponent(opponent),
+      if (isBallInHole && record.level != null) l10n.levelN(record.level!),
+      if (!isBallInHole && !isLocalPvp) l10n.vsOpponent(opponent),
       if (record.difficulty != null)
         switch (record.difficulty!) {
           AIDifficulty.easy => l10n.difficultyEasy,
@@ -148,9 +153,11 @@ class _HistoryTile extends StatelessWidget {
               border: Border.all(color: resultColor.withValues(alpha: 0.5)),
             ),
             child: Icon(
-              record.gameType == GameType.connectFour
-                  ? Icons.circle_outlined
-                  : Icons.grid_view_rounded,
+              switch (record.gameType) {
+                GameType.ticTacToe => Icons.grid_view_rounded,
+                GameType.connectFour => Icons.circle_outlined,
+                GameType.ballInHole => Icons.sports_golf_rounded,
+              },
               color: resultColor,
               size: 22,
             ),

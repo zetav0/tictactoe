@@ -6,7 +6,7 @@ enum AIDifficulty { easy, medium, hard }
 
 enum GameStatus { playing, xWins, oWins, draw }
 
-enum GameType { ticTacToe, connectFour }
+enum GameType { ticTacToe, connectFour, ballInHole }
 
 class GameState {
   final List<CellValue> board;

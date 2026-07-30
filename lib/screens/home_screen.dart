@@ -11,6 +11,7 @@ import '../theme/playful_theme.dart';
 import '../widgets/tappable.dart';
 import '../widgets/user_avatar.dart';
 import '../../main.dart' show firebaseReady;
+import 'ball_level_select_screen.dart';
 import 'connect_four_screen.dart';
 import 'game_screen.dart';
 import 'multiplayer_screen.dart';
@@ -24,7 +25,17 @@ class HomeScreen extends ConsumerWidget {
     final mode = ref.watch(gameModeProvider);
     final difficulty = ref.watch(difficultyProvider);
     final gameType = ref.watch(gameTypeProvider);
-    final isC4 = gameType == GameType.connectFour;
+    final isBallInHole = gameType == GameType.ballInHole;
+    final gameTitle = switch (gameType) {
+      GameType.ticTacToe => l10n.gameTicTacToe,
+      GameType.connectFour => l10n.gameConnectFour,
+      GameType.ballInHole => l10n.gameBallInHole,
+    };
+    final gameTagline = switch (gameType) {
+      GameType.ticTacToe => l10n.tttTagline,
+      GameType.connectFour => l10n.c4Tagline,
+      GameType.ballInHole => l10n.bihTagline,
+    };
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -57,8 +68,8 @@ class HomeScreen extends ConsumerWidget {
                         AnimatedSwitcher(
                           duration: const Duration(milliseconds: 250),
                           child: Text(
-                            isC4 ? l10n.gameConnectFour : l10n.gameTicTacToe,
-                            key: ValueKey(isC4),
+                            gameTitle,
+                            key: ValueKey(gameType),
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: compact ? 28 : 36,
                               fontWeight: FontWeight.w800,
@@ -72,8 +83,8 @@ class HomeScreen extends ConsumerWidget {
                         AnimatedSwitcher(
                           duration: const Duration(milliseconds: 250),
                           child: Text(
-                            isC4 ? l10n.c4Tagline : l10n.tttTagline,
-                            key: ValueKey(isC4),
+                            gameTagline,
+                            key: ValueKey(gameType),
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: compact ? 13 : 15,
                               color: Colors.white60,
@@ -88,36 +99,45 @@ class HomeScreen extends ConsumerWidget {
                               ref.read(gameTypeProvider.notifier).state = gt,
                         ).animate().fadeIn(delay: 380.ms).slideX(begin: -0.1),
                         SizedBox(height: compact ? 10 : 16),
-                        _ModeButton(
-                          compact: compact,
-                          label: l10n.playerVsPlayer,
-                          icon: Icons.group_rounded,
-                          selected: mode == GameMode.pvp,
-                          onTap: () =>
-                              ref.read(gameModeProvider.notifier).state =
-                                  GameMode.pvp,
-                        ).animate().fadeIn(delay: 400.ms).slideX(begin: -0.1),
-                        SizedBox(height: compact ? 8 : 12),
-                        _ModeButton(
-                          compact: compact,
-                          label: l10n.playerVsAi,
-                          icon: Icons.smart_toy_rounded,
-                          selected: mode == GameMode.pvAi,
-                          onTap: () =>
-                              ref.read(gameModeProvider.notifier).state =
-                                  GameMode.pvAi,
-                        ).animate().fadeIn(delay: 500.ms).slideX(begin: -0.1),
-                        SizedBox(height: compact ? 8 : 12),
-                        _OnlineButton(
-                          compact: compact,
-                          enabled: firebaseReady,
-                          onTap: () => Navigator.push(
-                            context,
-                            _slideRoute(MultiplayerScreen(gameType: gameType)),
-                          ),
-                        ).animate().fadeIn(delay: 560.ms).slideX(begin: -0.1),
+                        if (isBallInHole)
+                          _SinglePlayerCard(compact: compact)
+                              .animate()
+                              .fadeIn(delay: 400.ms)
+                              .slideX(begin: -0.1)
+                        else ...[
+                          _ModeButton(
+                            compact: compact,
+                            label: l10n.playerVsPlayer,
+                            icon: Icons.group_rounded,
+                            selected: mode == GameMode.pvp,
+                            onTap: () =>
+                                ref.read(gameModeProvider.notifier).state =
+                                    GameMode.pvp,
+                          ).animate().fadeIn(delay: 400.ms).slideX(begin: -0.1),
+                          SizedBox(height: compact ? 8 : 12),
+                          _ModeButton(
+                            compact: compact,
+                            label: l10n.playerVsAi,
+                            icon: Icons.smart_toy_rounded,
+                            selected: mode == GameMode.pvAi,
+                            onTap: () =>
+                                ref.read(gameModeProvider.notifier).state =
+                                    GameMode.pvAi,
+                          ).animate().fadeIn(delay: 500.ms).slideX(begin: -0.1),
+                          SizedBox(height: compact ? 8 : 12),
+                          _OnlineButton(
+                            compact: compact,
+                            enabled: firebaseReady,
+                            onTap: () => Navigator.push(
+                              context,
+                              _slideRoute(
+                                MultiplayerScreen(gameType: gameType),
+                              ),
+                            ),
+                          ).animate().fadeIn(delay: 560.ms).slideX(begin: -0.1),
+                        ],
                         SizedBox(height: compact ? 10 : 16),
-                        if (mode == GameMode.pvAi) ...[
+                        if (!isBallInHole && mode == GameMode.pvAi) ...[
                           Text(
                             l10n.aiDifficultyLevel,
                             style: GoogleFonts.plusJakartaSans(
@@ -140,17 +160,18 @@ class HomeScreen extends ConsumerWidget {
                           compact: compact,
                           onTap: () => Navigator.push(
                             context,
-                            _slideRoute(
-                              isC4
-                                  ? ConnectFourScreen(
-                                      mode: mode,
-                                      difficulty: difficulty,
-                                    )
-                                  : GameScreen(
-                                      mode: mode,
-                                      difficulty: difficulty,
-                                    ),
-                            ),
+                            _slideRoute(switch (gameType) {
+                              GameType.ballInHole =>
+                                const BallLevelSelectScreen(),
+                              GameType.connectFour => ConnectFourScreen(
+                                mode: mode,
+                                difficulty: difficulty,
+                              ),
+                              GameType.ticTacToe => GameScreen(
+                                mode: mode,
+                                difficulty: difficulty,
+                              ),
+                            }),
                           ),
                         ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.2),
                         SizedBox(height: compact ? 10 : 16),
@@ -394,7 +415,10 @@ class _GameTypePicker extends StatelessWidget {
               onTap: () => onChanged(gt),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(vertical: 11),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 11,
+                  horizontal: 8,
+                ),
                 decoration: active
                     ? BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.2),
@@ -408,21 +432,34 @@ class _GameTypePicker extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      gt == GameType.ticTacToe
-                          ? Icons.grid_view_rounded
-                          : Icons.circle_outlined,
-                      size: 16,
+                      switch (gt) {
+                        GameType.ticTacToe => Icons.grid_view_rounded,
+                        GameType.connectFour => Icons.circle_outlined,
+                        GameType.ballInHole => Icons.sports_golf_rounded,
+                      },
+                      size: 15,
                       color: active ? Colors.white : Colors.white54,
                     ),
-                    const SizedBox(width: 6),
-                    Text(
-                      gt == GameType.ticTacToe
-                          ? AppLocalizations.of(context).gameTicTacToe
-                          : AppLocalizations.of(context).gameConnectFour,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: active ? Colors.white : Colors.white54,
+                    const SizedBox(width: 5),
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          switch (gt) {
+                            GameType.ticTacToe =>
+                              AppLocalizations.of(context).gameTicTacToe,
+                            GameType.connectFour =>
+                              AppLocalizations.of(context).gameConnectFour,
+                            GameType.ballInHole =>
+                              AppLocalizations.of(context).gameBallInHole,
+                          },
+                          maxLines: 1,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: active ? Colors.white : Colors.white54,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -431,6 +468,74 @@ class _GameTypePicker extends StatelessWidget {
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+}
+
+/// Shown in place of the mode buttons when Ball in the Hole is selected —
+/// it is a single-player game with no PvP, AI or online modes.
+class _SinglePlayerCard extends StatelessWidget {
+  final bool compact;
+
+  const _SinglePlayerCard({this.compact = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        vertical: compact ? 13 : 18,
+        horizontal: 20,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.sports_golf_rounded,
+              color: Colors.white,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.bihSinglePlayer,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  l10n.bihModeCardBody,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white60,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

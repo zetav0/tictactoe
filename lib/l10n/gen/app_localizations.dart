@@ -110,6 +110,12 @@ abstract class AppLocalizations {
   /// **'Connect Four'**
   String get gameConnectFour;
 
+  /// No description provided for @gameBallInHole.
+  ///
+  /// In en, this message translates to:
+  /// **'Ball in the Hole'**
+  String get gameBallInHole;
+
   /// No description provided for @tttTagline.
   ///
   /// In en, this message translates to:
@@ -121,6 +127,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Connect four in a line.'**
   String get c4Tagline;
+
+  /// No description provided for @bihTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Tilt the maze, dodge the traps.'**
+  String get bihTagline;
+
+  /// No description provided for @bihSinglePlayer.
+  ///
+  /// In en, this message translates to:
+  /// **'Single Player'**
+  String get bihSinglePlayer;
+
+  /// No description provided for @bihModeCardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Roll the ball into the goal hole. Tilt your phone — or drag on the screen — and stay clear of the trap holes.'**
+  String get bihModeCardBody;
 
   /// No description provided for @hiUser.
   ///
@@ -498,6 +522,18 @@ abstract class AppLocalizations {
   /// **'Profile saved!'**
   String get profileSaved;
 
+  /// No description provided for @soundSection.
+  ///
+  /// In en, this message translates to:
+  /// **'SOUND'**
+  String get soundSection;
+
+  /// No description provided for @backgroundMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Background Music'**
+  String get backgroundMusic;
+
   /// No description provided for @historyEmpty.
   ///
   /// In en, this message translates to:
@@ -539,6 +575,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Online'**
   String get onlineLabel;
+
+  /// No description provided for @chooseLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'CHOOSE A LEVEL'**
+  String get chooseLevel;
+
+  /// No description provided for @levelN.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {n}'**
+  String levelN(int n);
+
+  /// No description provided for @bestTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Best {time}'**
+  String bestTime(String time);
+
+  /// No description provided for @levelComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Level Complete!'**
+  String get levelComplete;
+
+  /// No description provided for @allLevelsComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'All levels complete!'**
+  String get allLevelsComplete;
+
+  /// No description provided for @newBestTime.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW BEST TIME!'**
+  String get newBestTime;
+
+  /// No description provided for @nextLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Level'**
+  String get nextLevel;
+
+  /// No description provided for @bihHintTilt.
+  ///
+  /// In en, this message translates to:
+  /// **'Tilt your phone to roll the ball'**
+  String get bihHintTilt;
+
+  /// No description provided for @bihHintDrag.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag on the screen to steer the ball'**
+  String get bihHintDrag;
 }
 
 class _AppLocalizationsDelegate
